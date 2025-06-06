@@ -1,6 +1,25 @@
 import Image from "next/image";
+import ProductCard from '../components/ProductCard';
 
 export default function Home() {
+  const products = [
+    {
+      title: 'Scripture Wall Art',
+      description: 'Inspire your home with beautiful verses.',
+      imageUrl: '/products/scripture-wall-art.jpg',
+    },
+    {
+      title: 'Family Prayer Journal',
+      description: 'Grow together in faith and gratitude.',
+      imageUrl: '/products/family-prayer-journal.jpg',
+    },
+    {
+      title: "Kids' Bible Activities",
+      description: 'Fun, faith-filled activities for children.',
+      imageUrl: '/products/kids-bible-activities.jpg',
+    },
+  ];
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start">
       {/* Hero Section */}
@@ -39,31 +58,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products Placeholder */}
+      {/* Featured Products Grid */}
       <section id="featured-products" className="w-full max-w-4xl px-4 mb-16">
         <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 text-center">
           Featured Printables
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Placeholder product cards */}
-          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-            <div className="w-24 h-24 bg-blue-100 rounded mb-3" />
-            <h3 className="font-semibold text-blue-800 mb-1">Scripture Wall Art</h3>
-            <p className="text-sm text-blue-600 mb-2">Inspire your home with beautiful verses.</p>
-            <button className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">View</button>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-            <div className="w-24 h-24 bg-blue-100 rounded mb-3" />
-            <h3 className="font-semibold text-blue-800 mb-1">Family Prayer Journal</h3>
-            <p className="text-sm text-blue-600 mb-2">Grow together in faith and gratitude.</p>
-            <button className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">View</button>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-            <div className="w-24 h-24 bg-blue-100 rounded mb-3" />
-            <h3 className="font-semibold text-blue-800 mb-1">Kids&apos; Bible Activities</h3>
-            <p className="text-sm text-blue-600 mb-2">Fun, faith-filled activities for children.</p>
-            <button className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">View</button>
-          </div>
+          {products.map((product, idx) => (
+            <ProductCard
+              key={product.title}
+              title={product.title}
+              description={product.description}
+              imageUrl={product.imageUrl}
+              onView={() => alert(`View: ${product.title}`)}
+            />
+          ))}
         </div>
       </section>
 
