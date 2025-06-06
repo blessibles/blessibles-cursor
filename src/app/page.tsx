@@ -60,7 +60,7 @@ export default function Home() {
           </div>
           <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
             <div className="w-24 h-24 bg-blue-100 rounded mb-3" />
-            <h3 className="font-semibold text-blue-800 mb-1">Kids' Bible Activities</h3>
+            <h3 className="font-semibold text-blue-800 mb-1">Kids&apos; Bible Activities</h3>
             <p className="text-sm text-blue-600 mb-2">Fun, faith-filled activities for children.</p>
             <button className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800 transition">View</button>
           </div>
