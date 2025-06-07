@@ -1,7 +1,12 @@
 "use client";
 import Image from "next/image";
 import ProductCard from '../components/ProductCard';
-import { useState } from 'react';
+import SearchBar from '../components/SearchBar';
+import { useState, useEffect } from 'react';
+import { SearchableItem } from '../utils/search';
+import ProductFilters from '../components/ProductFilters';
+import products from '../data/products';
+import dynamic from 'next/dynamic';
 
 const categories = [
   { label: 'All', value: 'all' },
@@ -10,34 +15,45 @@ const categories = [
   { label: 'Activities', value: 'activities' },
 ];
 
-const products = [
-  {
-    title: 'Scripture Wall Art',
-    description: 'Inspire your home with beautiful verses.',
-    imageUrl: '/products/scripture-wall-art.jpg',
-    category: 'wall-art',
-  },
-  {
-    title: 'Family Prayer Journal',
-    description: 'Grow together in faith and gratitude.',
-    imageUrl: '/products/family-prayer-journal.jpg',
-    category: 'journals',
-  },
-  {
-    title: "Kids' Bible Activities",
-    description: 'Fun, faith-filled activities for children.',
-    imageUrl: '/products/kids-bible-activities.jpg',
-    category: 'activities',
-  },
-];
+const ProductModal = dynamic(() => import('../components/ProductModal'), { ssr: false });
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchResults, setSearchResults] = useState<SearchableItem[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<SearchableItem[]>(products);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<SearchableItem | null>(null);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterMessage, setNewsletterMessage] = useState('');
+  const [newsletterError, setNewsletterError] = useState('');
+  const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
 
-  const filteredProducts =
-    selectedCategory === 'all'
-      ? products
-      : products.filter((p) => p.category === selectedCategory);
+  // Update filtered products when search results or category changes
+  useEffect(() => {
+    let filtered = searchResults.length > 0 ? searchResults : products;
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+    setFilteredProducts(filtered);
+  }, [searchResults, selectedCategory, products]);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setNewsletterError('');
+    setNewsletterMessage('');
+    setNewsletterSubmitting(true);
+    if (!newsletterEmail.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
+      setNewsletterError('Please enter a valid email address.');
+      setNewsletterSubmitting(false);
+      return;
+    }
+    // Simulate async API call
+    setTimeout(() => {
+      setNewsletterMessage('Thank you for subscribing! Please check your inbox for confirmation.');
+      setNewsletterSubmitting(false);
+      setNewsletterEmail('');
+    }, 1200);
+  };
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start w-full">
@@ -77,21 +93,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Category Filter Bar */}
-      <section className="w-full mb-4 flex justify-center px-8">
-        <div className="flex gap-2 flex-wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat.value}
-              className={`px-4 py-2 rounded-full font-semibold border transition text-sm
-                ${selectedCategory === cat.value ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-100'}`}
-              onClick={() => setSelectedCategory(cat.value)}
+      {/* Search and Category Filter Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+          <div className="flex-1 w-full">
+            <SearchBar
+              items={products}
+              onSearch={setSearchResults}
+              placeholder="Search for printables..."
+              className="w-full"
+            />
+          </div>
+          <div className="w-full md:w-64">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
             >
-              {cat.label}
-            </button>
-          ))}
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* Product Filters */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <ProductFilters
+          products={filteredProducts}
+          onFilterChange={setFilteredProducts}
+          className="bg-gray-50 p-4 rounded-lg"
+        />
+      </div>
 
       {/* Featured Products Grid */}
       <section id="featured-products" className="mb-16 px-8 flex flex-col items-center w-full">
@@ -100,36 +137,61 @@ export default function Home() {
         </h2>
         <div className="flex justify-center w-full">
           <div className="inline-grid min-h-[300px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProducts.map((product, idx) => (
+            {filteredProducts.map((product) => (
               <ProductCard
-                key={product.title}
+                key={product.id}
+                id={product.id}
                 title={product.title}
-                description={product.description}
+                description={product.description || ''}
                 imageUrl={product.imageUrl}
-                onView={() => alert(`View: ${product.title}`)}
+                onView={() => {
+                  setSelectedProduct(product);
+                  setModalOpen(true);
+                }}
               />
             ))}
           </div>
         </div>
       </section>
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
 
-      {/* Newsletter Signup Placeholder */}
-      <section className="w-full max-w-2xl px-4 mb-20 text-center">
-        <h3 className="text-xl font-bold text-blue-900 mb-2">Join Our Newsletter</h3>
-        <p className="text-blue-700 mb-4">Get exclusive printables, faith tips, and special offers—straight to your inbox.</p>
-        <form className="flex flex-col md:flex-row gap-2 justify-center items-center">
-          <input
-            type="email"
-            placeholder="Your email address"
-            className="px-4 py-2 rounded border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          />
-          <button
-            type="submit"
-            className="bg-blue-700 text-white px-6 py-2 rounded font-semibold hover:bg-blue-800 transition"
-          >
-            Subscribe
-          </button>
-        </form>
+      {/* Newsletter Signup */}
+      <section className="w-full bg-blue-50 py-12 px-8">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-4">
+            Join Our Newsletter
+          </h2>
+          <p className="text-blue-700 mb-6">
+            Get weekly inspiration, new printables, and special offers delivered to your inbox.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-2 justify-center" onSubmit={handleNewsletterSubmit}>
+            {/* ARIA live region for newsletter feedback */}
+            <div aria-live="polite" className="sr-only">{newsletterMessage || newsletterError}</div>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="px-4 py-2 rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200 flex-grow max-w-md"
+              value={newsletterEmail}
+              onChange={e => setNewsletterEmail(e.target.value)}
+              disabled={newsletterSubmitting}
+            />
+            <button
+              type="submit"
+              className="bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
+              disabled={newsletterSubmitting}
+            >
+              {newsletterSubmitting ? 'Subscribing...' : 'Subscribe'}
+            </button>
+          </form>
+          {newsletterMessage && <div className="text-green-700 font-semibold mt-2">{newsletterMessage}</div>}
+          {newsletterError && <div className="text-red-600 font-semibold mt-2">{newsletterError}</div>}
+        </div>
       </section>
     </main>
   );

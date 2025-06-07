@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useRouter } from 'next/navigation';
+import { useCart } from '../layout';
+import { supabase } from '../../utils/supabaseClient';
 
 const stripePromise = loadStripe('pk_test_placeholder');
 
@@ -13,17 +16,35 @@ function CheckoutForm() {
   const [loading, setLoading] = useState(false);
   const [paying, setPaying] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const isNameValid = name.trim().length > 0;
   const isEmailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
   const isFormValid = isNameValid && isEmailValid;
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
+  const { cart } = useCart();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Get the logged-in user's ID from Supabase
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUserId(data.user?.id || null);
+    };
+    getUser();
+  }, []);
+
+  // Calculate real order total from cart
+  const orderTotal = cart.reduce((sum, item) => sum + (item.quantity * 10), 0); // $10 per item as placeholder
+  const orderTotalFormatted = `$${orderTotal.toFixed(2)}`;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isFormValid) return;
     setLoading(true);
     setMessage(null);
+    setApiError(null);
     // For demo, use $10.00 USD
     const res = await fetch('/api/checkout-intent', {
       method: 'POST',
@@ -31,6 +52,11 @@ function CheckoutForm() {
       body: JSON.stringify({ amount: 1000, currency: 'usd' }),
     });
     const data = await res.json();
+    if (data.error) {
+      setApiError(data.error);
+      setLoading(false);
+      return;
+    }
     setClientSecret(data.clientSecret);
     setLoading(false);
   }
@@ -50,12 +76,42 @@ function CheckoutForm() {
       setMessage(result.error.message || 'Payment failed.');
     } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
       setMessage('Payment successful! Thank you for your order.');
+      // Add new order for the logged-in user with cart line items in Supabase
+      if (userId) {
+        const { data: orderData, error: orderError } = await supabase
+          .from('orders')
+          .insert([
+            {
+              user_id: userId,
+              total: orderTotalFormatted,
+              status: 'Processing',
+              shipping_address: '123 Faith Lane, Springfield, USA',
+              payment_method: 'Visa **** 4242',
+            },
+          ])
+          .select()
+          .single();
+        if (!orderError && orderData) {
+          const orderId = orderData.id;
+          const items = cart.map(item => ({
+            order_id: orderId,
+            title: item.title,
+            quantity: item.quantity,
+            price: '$10.00', // In a real app, use actual price
+            download_url: '/downloads/' + item.title.toLowerCase().replace(/ /g, '-') + '.pdf',
+          }));
+          await supabase.from('order_items').insert(items);
+        }
+      }
+      // Redirect to success page after successful payment
+      router.push('/success');
     }
     setPaying(false);
   }
 
   return (
     <form className="bg-white rounded-lg shadow-md p-8 w-full max-w-md flex flex-col gap-4" onSubmit={handleSubmit}>
+      {apiError && <div className="mb-2 p-3 rounded bg-red-100 text-red-800 border border-red-200 text-center font-semibold">{apiError}</div>}
       <label className="font-semibold text-blue-800">Name
         <input
           type="text"
@@ -89,7 +145,7 @@ function CheckoutForm() {
             onClick={handlePay}
             disabled={!stripe || !elements || paying}
           >
-            {paying ? 'Processing…' : 'Pay $10.00'}
+            {paying ? 'Processing…' : `Pay ${orderTotalFormatted}`}
           </button>
         </>
       ) : (
@@ -115,4 +171,4 @@ export default function CheckoutPage() {
       </Elements>
     </div>
   );
-} 
+}

@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 
 const stripe = new Stripe('sk_test_placeholder');
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
     const { amount, currency } = await req.json();
     const paymentIntent = await stripe.paymentIntents.create({
@@ -12,7 +12,11 @@ export async function POST(req: NextRequest) {
       automatic_payment_methods: { enabled: true },
     });
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Payment intent failed.' }, { status: 400 });
+  } catch (error: unknown) {
+    let errorMsg = 'Payment intent failed.';
+    if (error && typeof error === 'object' && 'message' in error && typeof (error as { message: unknown }).message === 'string') {
+      errorMsg = (error as { message: string }).message;
+    }
+    return NextResponse.json({ error: errorMsg }, { status: 400 });
   }
 } 
