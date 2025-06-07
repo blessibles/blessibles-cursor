@@ -42,7 +42,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start">
       {/* Hero Section */}
-      <section className="w-full max-w-3xl px-4 py-16 text-center">
+      <section className="w-full max-w-7xl px-4 py-16 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-blue-900 mb-4 drop-shadow-lg">
           Blessibles.com
         </h1>
@@ -62,7 +62,7 @@ export default function Home() {
       </section>
 
       {/* Trust Indicators */}
-      <section className="w-full max-w-3xl px-4 flex flex-col md:flex-row justify-center items-center gap-6 mb-12">
+      <section className="w-full max-w-7xl px-4 flex flex-col md:flex-row justify-center items-center gap-6 mb-12">
         <div className="flex flex-col items-center">
           <Image src="/icons/heart.svg" alt="Faith-Based" width={40} height={40} />
           <span className="mt-2 text-blue-800 font-semibold">Faith-Based</span>
@@ -78,7 +78,7 @@ export default function Home() {
       </section>
 
       {/* Category Filter Bar */}
-      <section className="w-full max-w-4xl px-4 mb-4 flex justify-center">
+      <section className="w-full max-w-7xl px-4 mb-4 flex justify-center">
         <div className="flex gap-2 flex-wrap">
           {categories.map((cat) => (
             <button
@@ -94,7 +94,7 @@ export default function Home() {
       </section>
 
       {/* Featured Products Grid */}
-      <section id="featured-products" className="w-full max-w-4xl px-4 mb-16">
+      <section id="featured-products" className="w-full max-w-7xl px-4 mb-16">
         <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 text-center">
           Featured Printables
         </h2>
