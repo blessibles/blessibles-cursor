@@ -99,7 +99,7 @@ export default function Home() {
           Featured Printables
         </h2>
         <div className="flex justify-center w-full">
-          <div className="inline-grid min-h-[300px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="inline-grid min-h-[300px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProducts.map((product, idx) => (
               <ProductCard
                 key={product.title}
