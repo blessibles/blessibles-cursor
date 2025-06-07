@@ -1,12 +1,52 @@
 "use client";
 import './globals.css';
 import Link from 'next/link';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, createContext, useContext } from 'react';
+
+// Cart context types
+interface CartItem {
+  title: string;
+  quantity: number;
+}
+interface CartContextType {
+  cart: CartItem[];
+  addToCart: (item: CartItem) => void;
+  cartCount: number;
+}
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function useCart() {
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error('useCart must be used within CartProvider');
+  return ctx;
+}
+
+function CartProvider({ children }: { children: ReactNode }) {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const addToCart = (item: CartItem) => {
+    setCart((prev) => {
+      const existing = prev.find((i) => i.title === item.title);
+      if (existing) {
+        return prev.map((i) =>
+          i.title === item.title ? { ...i, quantity: i.quantity + item.quantity } : i
+        );
+      }
+      return [...prev, item];
+    });
+  };
+  const cartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
+  return (
+    <CartContext.Provider value={{ cart, addToCart, cartCount }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-gradient-to-b from-blue-50 to-white min-h-screen flex flex-col font-sans">
+        <CartProvider>
         {/* Header / Navigation */}
         <header className="w-full bg-white shadow-md sticky top-0 z-50">
           <nav className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
@@ -17,12 +57,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link href="/" className="text-blue-700 hover:text-blue-900 font-medium">Home</Link>
               <Link href="#featured-products" className="text-blue-700 hover:text-blue-900 font-medium">Products</Link>
               <Link href="/about" className="text-blue-700 hover:text-blue-900 font-medium">About</Link>
-              <button className="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-blue-700 hover:text-blue-900">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.5l.375 2.25M6 16.5A2.25 2.25 0 1 0 6 21a2.25 2.25 0 0 0 0-4.5zm0 0h9.75a2.25 2.25 0 0 0 2.24-2.02l1.08-8.11A1.125 1.125 0 0 0 17.93 5.25H4.81" />
-                </svg>
-                <span className="absolute -top-2 -right-2 bg-blue-700 text-white text-xs rounded-full px-1.5 py-0.5">0</span>
-              </button>
+              <CartButton />
             </div>
             {/* Hamburger for mobile */}
             <div className="md:hidden flex items-center">
@@ -37,8 +72,22 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <footer className="w-full bg-white border-t py-4 text-center text-blue-700 text-sm mt-8">
           &copy; {new Date().getFullYear()} Blessibles.com. All rights reserved.
         </footer>
+        </CartProvider>
       </body>
     </html>
+  );
+}
+
+function CartButton() {
+  const ctx = useContext(CartContext);
+  const cartCount = ctx ? ctx.cartCount : 0;
+  return (
+    <button className="relative">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-blue-700 hover:text-blue-900">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.5l.375 2.25M6 16.5A2.25 2.25 0 1 0 6 21a2.25 2.25 0 0 0 0-4.5zm0 0h9.75a2.25 2.25 0 0 0 2.24-2.02l1.08-8.11A1.125 1.125 0 0 0 17.93 5.25H4.81" />
+      </svg>
+      <span className="absolute -top-2 -right-2 bg-blue-700 text-white text-xs rounded-full px-1.5 py-0.5">{cartCount}</span>
+    </button>
   );
 }
 
