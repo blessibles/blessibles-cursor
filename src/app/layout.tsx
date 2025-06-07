@@ -3,11 +3,6 @@ import './globals.css';
 import Link from 'next/link';
 import { ReactNode, useState } from 'react';
 
-export const metadata = {
-  title: 'Blessibles.com',
-  description: 'Christian Family Printables Ecommerce',
-};
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
