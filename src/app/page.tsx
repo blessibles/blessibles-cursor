@@ -40,10 +40,10 @@ export default function Home() {
       : products.filter((p) => p.category === selectedCategory);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start">
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start w-full">
       {/* Hero Section */}
-      <section className="w-full max-w-7xl px-4 py-16 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-blue-900 mb-4 drop-shadow-lg">
+      <section className="w-full px-8 py-16 text-center">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-blue-900 mb-4 drop-shadow-lg">
           Blessibles.com
         </h1>
         <p className="text-xl md:text-2xl text-blue-700 mb-6 font-medium">
@@ -62,7 +62,7 @@ export default function Home() {
       </section>
 
       {/* Trust Indicators */}
-      <section className="w-full max-w-7xl px-4 flex flex-col md:flex-row justify-center items-center gap-6 mb-12">
+      <section className="w-full flex flex-col md:flex-row justify-center items-center gap-12 mb-12 px-8">
         <div className="flex flex-col items-center">
           <Image src="/icons/heart.svg" alt="Faith-Based" width={40} height={40} />
           <span className="mt-2 text-blue-800 font-semibold">Faith-Based</span>
@@ -78,7 +78,7 @@ export default function Home() {
       </section>
 
       {/* Category Filter Bar */}
-      <section className="w-full max-w-7xl px-4 mb-4 flex justify-center">
+      <section className="w-full mb-4 flex justify-center px-8">
         <div className="flex gap-2 flex-wrap">
           {categories.map((cat) => (
             <button
@@ -94,11 +94,11 @@ export default function Home() {
       </section>
 
       {/* Featured Products Grid */}
-      <section id="featured-products" className="w-full max-w-7xl px-4 mb-16">
+      <section id="featured-products" className="w-full mb-16 px-8">
         <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 text-center">
           Featured Printables
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredProducts.map((product, idx) => (
             <ProductCard
               key={product.title}
@@ -112,7 +112,7 @@ export default function Home() {
       </section>
 
       {/* Newsletter Signup Placeholder */}
-      <section className="w-full max-w-xl px-4 mb-20 text-center">
+      <section className="w-full max-w-2xl px-4 mb-20 text-center">
         <h3 className="text-xl font-bold text-blue-900 mb-2">Join Our Newsletter</h3>
         <p className="text-blue-700 mb-4">Get exclusive printables, faith tips, and special offers—straight to your inbox.</p>
         <form className="flex flex-col md:flex-row gap-2 justify-center items-center">
