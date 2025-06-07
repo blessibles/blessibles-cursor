@@ -11,6 +11,7 @@ interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
+  removeFromCart: (title: string) => void;
   cartCount: number;
 }
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -34,9 +35,12 @@ function CartProvider({ children }: { children: ReactNode }) {
       return [...prev, item];
     });
   };
+  const removeFromCart = (title: string) => {
+    setCart((prev) => prev.filter((i) => i.title !== title));
+  };
   const cartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
   return (
-    <CartContext.Provider value={{ cart, addToCart, cartCount }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, cartCount }}>
       {children}
     </CartContext.Provider>
   );
@@ -98,9 +102,10 @@ function CartButton() {
             {ctx && ctx.cart.length > 0 ? (
               <ul className="mb-4">
                 {ctx.cart.map((item) => (
-                  <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0">
+                  <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0 gap-2">
                     <span>{item.title}</span>
                     <span className="font-semibold text-blue-700">x{item.quantity}</span>
+                    <button className="text-red-600 hover:text-red-800 text-xs ml-2" onClick={() => ctx.removeFromCart(item.title)}>Remove</button>
                   </li>
                 ))}
               </ul>
