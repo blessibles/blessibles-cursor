@@ -1,25 +1,43 @@
 "use client";
 import Image from "next/image";
 import ProductCard from '../components/ProductCard';
+import { useState } from 'react';
+
+const categories = [
+  { label: 'All', value: 'all' },
+  { label: 'Wall Art', value: 'wall-art' },
+  { label: 'Journals', value: 'journals' },
+  { label: 'Activities', value: 'activities' },
+];
+
+const products = [
+  {
+    title: 'Scripture Wall Art',
+    description: 'Inspire your home with beautiful verses.',
+    imageUrl: '/products/scripture-wall-art.jpg',
+    category: 'wall-art',
+  },
+  {
+    title: 'Family Prayer Journal',
+    description: 'Grow together in faith and gratitude.',
+    imageUrl: '/products/family-prayer-journal.jpg',
+    category: 'journals',
+  },
+  {
+    title: "Kids' Bible Activities",
+    description: 'Fun, faith-filled activities for children.',
+    imageUrl: '/products/kids-bible-activities.jpg',
+    category: 'activities',
+  },
+];
 
 export default function Home() {
-  const products = [
-    {
-      title: 'Scripture Wall Art',
-      description: 'Inspire your home with beautiful verses.',
-      imageUrl: '/products/scripture-wall-art.jpg',
-    },
-    {
-      title: 'Family Prayer Journal',
-      description: 'Grow together in faith and gratitude.',
-      imageUrl: '/products/family-prayer-journal.jpg',
-    },
-    {
-      title: "Kids' Bible Activities",
-      description: 'Fun, faith-filled activities for children.',
-      imageUrl: '/products/kids-bible-activities.jpg',
-    },
-  ];
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const filteredProducts =
+    selectedCategory === 'all'
+      ? products
+      : products.filter((p) => p.category === selectedCategory);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start">
@@ -59,13 +77,29 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Category Filter Bar */}
+      <section className="w-full max-w-4xl px-4 mb-4 flex justify-center">
+        <div className="flex gap-2 flex-wrap">
+          {categories.map((cat) => (
+            <button
+              key={cat.value}
+              className={`px-4 py-2 rounded-full font-semibold border transition text-sm
+                ${selectedCategory === cat.value ? 'bg-blue-700 text-white border-blue-700' : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-100'}`}
+              onClick={() => setSelectedCategory(cat.value)}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+      </section>
+
       {/* Featured Products Grid */}
       <section id="featured-products" className="w-full max-w-4xl px-4 mb-16">
         <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 text-center">
           Featured Printables
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {products.map((product, idx) => (
+          {filteredProducts.map((product, idx) => (
             <ProductCard
               key={product.title}
               title={product.title}
