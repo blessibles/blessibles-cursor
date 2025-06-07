@@ -81,13 +81,36 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 function CartButton() {
   const ctx = useContext(CartContext);
   const cartCount = ctx ? ctx.cartCount : 0;
+  const [open, setOpen] = useState(false);
   return (
-    <button className="relative">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-blue-700 hover:text-blue-900">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.5l.375 2.25M6 16.5A2.25 2.25 0 1 0 6 21a2.25 2.25 0 0 0 0-4.5zm0 0h9.75a2.25 2.25 0 0 0 2.24-2.02l1.08-8.11A1.125 1.125 0 0 0 17.93 5.25H4.81" />
-      </svg>
-      <span className="absolute -top-2 -right-2 bg-blue-700 text-white text-xs rounded-full px-1.5 py-0.5">{cartCount}</span>
-    </button>
+    <>
+      <button className="relative" onClick={() => setOpen(true)}>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-blue-700 hover:text-blue-900">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.5l.375 2.25M6 16.5A2.25 2.25 0 1 0 6 21a2.25 2.25 0 0 0 0-4.5zm0 0h9.75a2.25 2.25 0 0 0 2.24-2.02l1.08-8.11A1.125 1.125 0 0 0 17.93 5.25H4.81" />
+        </svg>
+        <span className="absolute -top-2 -right-2 bg-blue-700 text-white text-xs rounded-full px-1.5 py-0.5">{cartCount}</span>
+      </button>
+      {open && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] max-w-xs w-full relative">
+            <button className="absolute top-2 right-2 text-blue-700 hover:text-blue-900 text-xl" onClick={() => setOpen(false)}>&times;</button>
+            <h3 className="text-lg font-bold mb-4 text-blue-900">Your Cart</h3>
+            {ctx && ctx.cart.length > 0 ? (
+              <ul className="mb-4">
+                {ctx.cart.map((item) => (
+                  <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0">
+                    <span>{item.title}</span>
+                    <span className="font-semibold text-blue-700">x{item.quantity}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-blue-700">Your cart is empty.</p>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
