@@ -11,6 +11,8 @@ function CheckoutForm() {
   const [touched, setTouched] = useState({ name: false, email: false });
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
   const isNameValid = name.trim().length > 0;
   const isEmailValid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
   const isFormValid = isNameValid && isEmailValid;
@@ -21,6 +23,7 @@ function CheckoutForm() {
     e.preventDefault();
     if (!isFormValid) return;
     setLoading(true);
+    setMessage(null);
     // For demo, use $10.00 USD
     const res = await fetch('/api/checkout-intent', {
       method: 'POST',
@@ -30,6 +33,25 @@ function CheckoutForm() {
     const data = await res.json();
     setClientSecret(data.clientSecret);
     setLoading(false);
+  }
+
+  async function handlePay() {
+    if (!stripe || !elements || !clientSecret) return;
+    setPaying(true);
+    setMessage(null);
+    const cardElement = elements.getElement(CardElement);
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement!,
+        billing_details: { name, email },
+      },
+    });
+    if (result.error) {
+      setMessage(result.error.message || 'Payment failed.');
+    } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+      setMessage('Payment successful! Thank you for your order.');
+    }
+    setPaying(false);
   }
 
   return (
@@ -64,9 +86,10 @@ function CheckoutForm() {
           <button
             type="button"
             className="w-full bg-blue-700 text-white py-2 rounded font-semibold hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled
+            onClick={handlePay}
+            disabled={!stripe || !elements || paying}
           >
-            Pay (Demo Only)
+            {paying ? 'Processing…' : 'Pay $10.00'}
           </button>
         </>
       ) : (
@@ -78,6 +101,7 @@ function CheckoutForm() {
           {loading ? 'Loading…' : 'Continue to Payment'}
         </button>
       )}
+      {message && <div className={`mt-2 p-3 rounded text-center font-semibold ${message.includes('success') ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>{message}</div>}
     </form>
   );
 }
