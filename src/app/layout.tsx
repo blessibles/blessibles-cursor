@@ -98,6 +98,7 @@ function CartButton() {
   const ctx = useContext(CartContext);
   const cartCount = ctx ? ctx.cartCount : 0;
   const [open, setOpen] = useState(false);
+  const [checkout, setCheckout] = useState(false);
   return (
     <>
       <button className="relative" onClick={() => setOpen(true)}>
@@ -109,22 +110,28 @@ function CartButton() {
       {open && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 min-w-[320px] max-w-xs w-full relative">
-            <button className="absolute top-2 right-2 text-blue-700 hover:text-blue-900 text-xl" onClick={() => setOpen(false)}>&times;</button>
+            <button className="absolute top-2 right-2 text-blue-700 hover:text-blue-900 text-xl" onClick={() => { setOpen(false); setCheckout(false); }}>&times;</button>
             <h3 className="text-lg font-bold mb-4 text-blue-900">Your Cart</h3>
             {ctx && ctx.cart.length > 0 ? (
-              <ul className="mb-4">
-                {ctx.cart.map((item) => (
-                  <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0 gap-2">
-                    <span>{item.title}</span>
-                    <div className="flex items-center gap-1">
-                      <button className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" onClick={() => ctx.decreaseQuantity(item.title)}>-</button>
-                      <span className="font-semibold text-blue-700">{item.quantity}</span>
-                      <button className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" onClick={() => ctx.increaseQuantity(item.title)}>+</button>
-                    </div>
-                    <button className="text-red-600 hover:text-red-800 text-xs ml-2" onClick={() => ctx.removeFromCart(item.title)}>Remove</button>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className="mb-4">
+                  {ctx.cart.map((item) => (
+                    <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0 gap-2">
+                      <span>{item.title}</span>
+                      <div className="flex items-center gap-1">
+                        <button className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" onClick={() => ctx.decreaseQuantity(item.title)}>-</button>
+                        <span className="font-semibold text-blue-700">{item.quantity}</span>
+                        <button className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" onClick={() => ctx.increaseQuantity(item.title)}>+</button>
+                      </div>
+                      <button className="text-red-600 hover:text-red-800 text-xs ml-2" onClick={() => ctx.removeFromCart(item.title)}>Remove</button>
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full bg-blue-700 text-white py-2 rounded font-semibold hover:bg-blue-800 transition mb-2" onClick={() => setCheckout(true)}>Checkout</button>
+                {checkout && (
+                  <div className="mt-2 p-4 bg-blue-50 rounded text-blue-800 text-center font-semibold border border-blue-200">Checkout coming soon!</div>
+                )}
+              </>
             ) : (
               <p className="text-blue-700">Your cart is empty.</p>
             )}
