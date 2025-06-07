@@ -12,6 +12,8 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (title: string) => void;
+  increaseQuantity: (title: string) => void;
+  decreaseQuantity: (title: string) => void;
   cartCount: number;
 }
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,9 +40,19 @@ function CartProvider({ children }: { children: ReactNode }) {
   const removeFromCart = (title: string) => {
     setCart((prev) => prev.filter((i) => i.title !== title));
   };
+  const increaseQuantity = (title: string) => {
+    setCart((prev) => prev.map((i) =>
+      i.title === title ? { ...i, quantity: i.quantity + 1 } : i
+    ));
+  };
+  const decreaseQuantity = (title: string) => {
+    setCart((prev) => prev.flatMap((i) =>
+      i.title === title ? (i.quantity > 1 ? [{ ...i, quantity: i.quantity - 1 }] : []) : [i]
+    ));
+  };
   const cartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, cartCount }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, cartCount }}>
       {children}
     </CartContext.Provider>
   );
@@ -104,7 +116,11 @@ function CartButton() {
                 {ctx.cart.map((item) => (
                   <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0 gap-2">
                     <span>{item.title}</span>
-                    <span className="font-semibold text-blue-700">x{item.quantity}</span>
+                    <div className="flex items-center gap-1">
+                      <button className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" onClick={() => ctx.decreaseQuantity(item.title)}>-</button>
+                      <span className="font-semibold text-blue-700">{item.quantity}</span>
+                      <button className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" onClick={() => ctx.increaseQuantity(item.title)}>+</button>
+                    </div>
                     <button className="text-red-600 hover:text-red-800 text-xs ml-2" onClick={() => ctx.removeFromCart(item.title)}>Remove</button>
                   </li>
                 ))}
