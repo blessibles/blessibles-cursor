@@ -55,19 +55,21 @@ export default function DailyVerse() {
   }, []);
 
   return (
-    <section className="w-full bg-yellow-50 py-6 px-4 flex flex-col items-center justify-center border-b border-yellow-200">
-      <h2 className="text-lg font-bold text-yellow-900 mb-2">Daily Scripture</h2>
-      {loading ? (
-        <div className="text-yellow-700">Loading verse...</div>
-      ) : verse ? (
-        <blockquote className="text-yellow-800 italic text-center max-w-xl mx-auto">
-          “{verse.text}”
-          <footer className="mt-2 text-yellow-900 font-semibold">— {verse.reference}</footer>
-        </blockquote>
-      ) : (
-        <div className="text-red-600">Could not load verse.</div>
-      )}
-      {error && <div className="text-yellow-700 text-xs mt-2">{error}</div>}
+    <section className="w-full bg-yellow-50 py-3 px-4 flex items-center justify-center border-b border-yellow-200">
+      <div className="max-w-6xl w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+        <h2 className="text-base font-bold text-yellow-900 whitespace-nowrap">Daily Scripture</h2>
+        {loading ? (
+          <div className="text-yellow-700">Loading verse...</div>
+        ) : verse ? (
+          <blockquote className="text-yellow-800 italic text-center md:text-left flex-1">
+            <span className="inline-block">"{verse.text}"</span>
+            <footer className="inline-block ml-2 text-yellow-900 font-semibold">— {verse.reference}</footer>
+          </blockquote>
+        ) : (
+          <div className="text-red-600">Could not load verse.</div>
+        )}
+      </div>
+      {error && <div className="text-yellow-700 text-xs mt-1">{error}</div>}
     </section>
   );
 } 
