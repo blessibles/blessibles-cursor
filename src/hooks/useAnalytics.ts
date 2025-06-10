@@ -25,16 +25,20 @@ export function useAnalytics() {
   useEffect(() => {
     if (pathname) {
       const url = pathname + searchParams.toString();
-      window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '', {
-        page_path: url,
-        page_location: window.location.href,
-        page_title: document.title,
-      });
+      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+        window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '', {
+          page_path: url,
+          page_location: window.location.href,
+          page_title: document.title,
+        });
+      }
     }
   }, [pathname, searchParams]);
 
   const trackEvent = (action: string, params?: Record<string, any>) => {
-    window.gtag('event', action, params);
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', action, params);
+    }
   };
 
   return { trackEvent };

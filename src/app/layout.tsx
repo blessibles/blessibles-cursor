@@ -139,7 +139,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </Link>
               <div className="hidden md:flex gap-6 items-center">
                 <Link href="/" className="text-blue-900 hover:text-blue-950 font-medium">Home</Link>
-                <Link href="#featured-products" className="text-blue-900 hover:text-blue-950 font-medium">Products</Link>
+                <Link href="/products" className="text-blue-900 hover:text-blue-950 font-medium">Products</Link>
                 <Link href="/wishlist" className="flex items-center gap-1 text-blue-900 hover:text-blue-950 font-medium">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ef4444" className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.435 6.582a5.373 5.373 0 0 0-7.6 0l-.835.836-.835-.836a5.373 5.373 0 1 0-7.6 7.6l.836.835 7.6 7.6 7.6-7.6.836-.835a5.373 5.373 0 0 0 0-7.6z" />
@@ -162,7 +162,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           {/* Footer */}
-          <footer className="w-full bg-white border-t py-4 text-center text-blue-900 text-sm mt-8">
+          <footer className="w-full bg-white border-t py-4 text-center text-blue-900 text-sm mt-8" style={{ borderTopColor: '#1e3a8a', borderTopWidth: '1px', borderStyle: 'solid' }}>
             &copy; {new Date().getFullYear()} Blessibles.com. All rights reserved.
           </footer>
         </CartProvider>
@@ -278,7 +278,7 @@ function MobileMenu() {
       {open && (
         <div className="absolute top-16 right-4 bg-white shadow-lg rounded-lg flex flex-col gap-4 p-4 z-50 min-w-[160px] border">
           <Link href="/" className="text-blue-900 hover:text-blue-950 font-medium" onClick={() => setOpen(false)}>Home</Link>
-          <Link href="#featured-products" className="text-blue-900 hover:text-blue-950 font-medium" onClick={() => setOpen(false)}>Products</Link>
+          <Link href="/products" className="text-blue-900 hover:text-blue-950 font-medium" onClick={() => setOpen(false)}>Products</Link>
           <Link href="/about" className="text-blue-900 hover:text-blue-950 font-medium" onClick={() => setOpen(false)}>About</Link>
           <button className="flex items-center gap-2 text-blue-900 hover:text-blue-950 font-medium" onClick={() => setOpen(false)}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
