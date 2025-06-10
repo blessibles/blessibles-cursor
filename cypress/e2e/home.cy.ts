@@ -1,3 +1,6 @@
+/// <reference types="cypress" />
+/// <reference types="cypress-axe" />
+
 describe('Home Page', () => {
   beforeEach(() => {
     cy.visit('/');

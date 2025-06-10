@@ -3,9 +3,9 @@ import { supabase } from '../../../../../../utils/supabaseClient';
 
 export async function GET(
   req: Request,
-  { params }: { params: { campaignId: string; subscriberId: string } }
+  { params }: { params: Promise<{ campaignId: string; subscriberId: string }> }
 ) {
-  const { campaignId, subscriberId } = params;
+  const { campaignId, subscriberId } = await params;
   const url = new URL(req.url).searchParams.get('url');
   if (campaignId && subscriberId && url) {
     await supabase.from('newsletter_campaign_events').insert([

@@ -59,7 +59,6 @@ export function generateMetadata({
     verification: {
       google: 'your-google-site-verification',
       yandex: 'your-yandex-verification',
-      bing: 'your-bing-verification',
     },
   };
 } 

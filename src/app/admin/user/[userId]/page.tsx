@@ -1,7 +1,5 @@
-// @ts-nocheck
 "use client";
 import React, { useEffect, useState } from "react";
-// import { useRouter } from "next/navigation"; // Removed unused import
 import { supabase } from '../../../../utils/supabaseClient';
 
 interface User {
@@ -63,8 +61,8 @@ interface AuditLogEntry {
   };
 }
 
-/** @param {{ params: { userId: string } }} props */
-export default function AdminUserPage({ params }: { params: { userId: string } }) {
+export default async function Page({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,7 +95,7 @@ export default function AdminUserPage({ params }: { params: { userId: string } }
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('*')
-          .eq('id', params.userId)
+          .eq('id', userId)
           .single();
 
         if (userError) throw userError;
@@ -115,7 +113,7 @@ export default function AdminUserPage({ params }: { params: { userId: string } }
         const { data: ordersData, error: ordersError } = await supabase
           .from('orders')
           .select('*')
-          .eq('user_id', params.userId)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
         if (ordersError) throw ordersError;
@@ -135,7 +133,7 @@ export default function AdminUserPage({ params }: { params: { userId: string } }
         const { data: ticketsData, error: ticketsError } = await supabase
           .from('support_tickets')
           .select('*')
-          .eq('user_id', params.userId)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
 
         if (ticketsError) throw ticketsError;
@@ -147,7 +145,7 @@ export default function AdminUserPage({ params }: { params: { userId: string } }
         const { data: auditData, error: auditError } = await supabase
           .from('admin_audit_log')
           .select('*, admin:admin_user_id(email)')
-          .eq('target_user_id', params.userId)
+          .eq('target_user_id', userId)
           .order('created_at', { ascending: false });
 
         if (auditError) throw auditError;
@@ -178,7 +176,7 @@ export default function AdminUserPage({ params }: { params: { userId: string } }
       }
     };
     fetchAdminUser();
-  }, [params.userId]);
+  }, [userId]);
 
   async function logAdminAction(actionType: string, details: Record<string, unknown> = {}) {
     if (!adminUser || !user) return;

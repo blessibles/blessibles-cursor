@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server';
 import { supabase } from '../../../../utils/supabaseClient';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function GET(request: Request): Promise<Response> {
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
 

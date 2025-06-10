@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../../utils/supabaseClient';
 
-export async function GET(req: NextRequest, { params }: { params: { orderItemId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ orderItemId: string }> }) {
+  const { orderItemId } = await params;
   try {
-    const orderItemId = params.orderItemId;
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {

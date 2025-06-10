@@ -1,6 +1,15 @@
 'use client';
 
-import { ReportHandler } from 'web-vitals';
+// import { ReportHandler } from 'web-vitals';
+type WebVitalMetric = {
+  name: string;
+  value: number;
+  id: string;
+  delta: number;
+  rating?: string;
+  [key: string]: any;
+};
+type ReportHandler = (metric: WebVitalMetric) => void;
 
 interface PerformanceMetrics {
   FCP: number; // First Contentful Paint
@@ -12,7 +21,7 @@ interface PerformanceMetrics {
 
 const metrics: Partial<PerformanceMetrics> = {};
 
-export function reportWebVitals(metric: ReportHandler) {
+export function reportWebVitals(metric: WebVitalMetric) {
   const { name, value } = metric;
   metrics[name as keyof PerformanceMetrics] = value;
 
@@ -28,7 +37,7 @@ export function reportWebVitals(metric: ReportHandler) {
   }
 }
 
-function sendToAnalytics(metric: ReportHandler) {
+function sendToAnalytics(metric: WebVitalMetric) {
   const { name, value, id, delta, rating } = metric;
   
   // Example: Send to Google Analytics
@@ -77,8 +86,9 @@ export function trackResourceLoading() {
 
   const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      if (entry.initiatorType === 'img' || entry.initiatorType === 'script') {
-        trackCustomMetric(`${entry.initiatorType} Load Time`, entry.duration);
+      const resource = entry as PerformanceResourceTiming;
+      if (resource.initiatorType === 'img' || resource.initiatorType === 'script') {
+        trackCustomMetric(`${resource.initiatorType} Load Time`, resource.duration);
       }
     }
   });

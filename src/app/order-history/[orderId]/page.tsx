@@ -29,7 +29,8 @@ interface Order {
   order_items: OrderItem[];
 }
 
-export default function OrderDetailsPage({ params }: { params: { orderId: string } }) {
+export default async function OrderDetailsPage({ params }: { params: Promise<{ orderId: string }> }) {
+  const { orderId } = await params;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,13 +63,12 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
               )
             )
           `)
-          .eq('id', params.orderId)
+          .eq('id', orderId)
           .eq('user_id', user.id)
           .single();
 
         if (error) throw error;
         if (!data) throw new Error('Order not found');
-        
         setOrder(data);
       } catch (err: unknown) {
         let errorMsg = 'Unknown error';
@@ -80,9 +80,8 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
         setLoading(false);
       }
     };
-
     fetchOrderDetails();
-  }, [params.orderId]);
+  }, [orderId]);
 
   useEffect(() => {
     // Fetch refunds_enabled flag
@@ -97,13 +96,12 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
       }
     };
     fetchRefundsEnabled();
-  }, [params.orderId]);
+  }, [orderId]);
 
   const handleCancelOrder = async () => {
     if (!confirm('Are you sure you want to cancel this order?')) {
       return;
     }
-
     setCancelling(true);
     try {
       const response = await fetch('/api/orders/cancel', {
@@ -111,15 +109,12 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ orderId: params.orderId }),
+        body: JSON.stringify({ orderId }),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.error || 'Failed to cancel order');
       }
-
       // Refresh the order details
       const { data: updatedOrder, error: fetchError } = await supabase
         .from('orders')
@@ -135,12 +130,10 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
             )
           )
         `)
-        .eq('id', params.orderId)
+        .eq('id', orderId)
         .single();
-
       if (fetchError) throw fetchError;
       setOrder(updatedOrder);
-      
       alert('Order cancelled successfully');
     } catch (err: unknown) {
       let errorMsg = 'Unknown error';
@@ -159,7 +152,6 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
       alert('Please provide a reason for the refund request');
       return;
     }
-
     setRequestingRefund(true);
     try {
       const response = await fetch('/api/orders/refund', {
@@ -168,17 +160,14 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: params.orderId,
+          orderId,
           reason: refundReason,
         }),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.error || 'Failed to process refund request');
       }
-
       // Refresh the order details
       const { data: updatedOrder, error: fetchError } = await supabase
         .from('orders')
@@ -194,15 +183,13 @@ export default function OrderDetailsPage({ params }: { params: { orderId: string
             )
           )
         `)
-        .eq('id', params.orderId)
+        .eq('id', orderId)
         .single();
-
       if (fetchError) throw fetchError;
       setOrder(updatedOrder);
-      
       setShowRefundModal(false);
       setRefundReason('');
-      alert(data.message || 'Refund request submitted successfully');
+      alert('Refund request submitted successfully');
     } catch (err: unknown) {
       let errorMsg = 'Unknown error';
       if (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') {

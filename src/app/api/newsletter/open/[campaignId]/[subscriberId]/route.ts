@@ -9,9 +9,9 @@ const pixel = Buffer.from(
 
 export async function GET(
   req: Request,
-  { params }: { params: { campaignId: string; subscriberId: string } }
+  { params }: { params: Promise<{ campaignId: string; subscriberId: string }> }
 ) {
-  const { campaignId, subscriberId } = params;
+  const { campaignId, subscriberId } = await params;
   // Increment open_count for the campaign
   if (campaignId && subscriberId) {
     await supabase.from('newsletter_campaign_events').insert([

@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { supabase } from '../../../../../../utils/supabaseClient';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 function rewriteLinksForClickTracking(html: string, campaignId: string, subscriberId: string) {
   return html.replace(/<a\s+([^>]*?)href=["']([^"']+)["']([^>]*)>/gi, (match, pre, href, post) => {
     // Only rewrite http/https links
@@ -24,6 +22,9 @@ interface ErrorLogEntry {
 
 export async function POST(request: Request): Promise<Response> {
   try {
+    // Initialize Resend here, inside the function
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
     const { campaignId } = await request.json();
     if (!campaignId) {
       return NextResponse.json({ error: 'Missing campaignId' }, { status: 400 });

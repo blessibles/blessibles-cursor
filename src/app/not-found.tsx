@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 
-export default function NotFound() {
+function NotFoundContent() {
   const { trackEvent } = useAnalytics();
 
   useEffect(() => {
@@ -49,5 +49,13 @@ export default function NotFound() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NotFound() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NotFoundContent />
+    </Suspense>
   );
 } 

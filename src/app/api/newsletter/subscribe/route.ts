@@ -2,13 +2,12 @@ import { NextResponse } from 'next/server';
 import { supabase } from '../../../../utils/supabaseClient';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 // Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request): Promise<Response> {
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { email } = await request.json();
 
     // Validate email
@@ -76,6 +75,7 @@ export async function POST(request: Request): Promise<Response> {
 }
 
 async function sendConfirmationEmail(email: string) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const confirmationToken = crypto.randomUUID();
   const unsubscribeToken = crypto.randomUUID();
   

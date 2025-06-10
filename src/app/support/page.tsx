@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../utils/supabaseClient';
 
@@ -26,7 +26,7 @@ interface Order {
   }>;
 }
 
-export default function SupportPage() {
+function SupportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order');
@@ -251,5 +251,13 @@ export default function SupportPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SupportPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SupportContent />
+    </Suspense>
   );
 } 
