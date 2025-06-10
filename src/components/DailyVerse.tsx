@@ -56,7 +56,7 @@ export default function DailyVerse() {
 
   return (
     <section className="w-full bg-yellow-50 py-3 px-4 flex flex-col items-center justify-center border-b border-yellow-200">
-      <h2 className="text-sm font-bold text-yellow-900 mb-2">Daily Scripture</h2>
+      <h2 className="text-sm font-bold text-yellow-900 mb-2 uppercase">Daily Scripture</h2>
       <div className="max-w-6xl w-full">
         {loading ? (
           <div className="text-yellow-700 text-center">Loading verse...</div>
