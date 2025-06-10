@@ -56,29 +56,33 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-start w-full">
-      {/* Hero Section */}
-      <section className="w-full px-8 py-16 text-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold text-blue-900 mb-4 drop-shadow-lg">
-          Blessibles.com
-        </h1>
-        <p className="text-xl md:text-2xl text-blue-700 mb-6 font-medium">
-          Christian Family Printables for Every Season of Life
-        </p>
-        <p className="text-base md:text-lg text-blue-600 mb-8">
-          Beautiful, faith-filled printables to inspire, encourage, and organize your family. 
-          Trusted by Christian families everywhere.
-        </p>
-        <a
-          href="#featured-products"
-          className="inline-block bg-blue-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-800 transition"
-        >
-          Shop Featured Printables
-        </a>
+    <main className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex flex-col items-center w-full">
+      {/* Modern Hero Section */}
+      <section className="w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-10 md:py-16 bg-gradient-to-r from-blue-100 via-white to-blue-50 border-b border-blue-100 shadow-sm">
+        <div className="flex-1 text-left md:pr-12">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 mb-3 leading-tight drop-shadow-lg">
+            Beautiful Christian Printables
+          </h1>
+          <p className="text-lg md:text-xl text-blue-700 mb-4 font-medium">
+            Faith-filled resources for families, teachers, and churches.
+          </p>
+          <p className="text-base md:text-lg text-blue-600 mb-6">
+            Explore our curated collection of wall art, journals, activities, and more—designed to inspire and encourage.
+          </p>
+          <a
+            href="#featured-products"
+            className="inline-block bg-blue-700 text-white px-7 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-800 transition"
+          >
+            Shop Featured Printables
+          </a>
+        </div>
+        <div className="flex-1 flex justify-center mt-8 md:mt-0">
+          <Image src="/hero-preview.png" alt="Blessibles Printables" width={340} height={340} className="rounded-xl shadow-lg border border-blue-100 object-contain bg-white" />
+        </div>
       </section>
 
       {/* Trust Indicators */}
-      <section className="w-full flex flex-col md:flex-row justify-center items-center gap-12 mb-12 px-8">
+      <section className="w-full flex flex-col md:flex-row justify-center items-center gap-12 mb-12 px-8 mt-8">
         <div className="flex flex-col items-center">
           <Image src="/icons/heart.svg" alt="Faith-Based" width={40} height={40} />
           <span className="mt-2 text-blue-800 font-semibold">Faith-Based</span>
@@ -94,7 +98,7 @@ export default function Home() {
       </section>
 
       {/* Search and Category Filter Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex-1 w-full">
             <SearchBar
@@ -122,7 +126,7 @@ export default function Home() {
       </div>
 
       {/* Product Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <ProductFilters
           products={filteredProducts}
           onFilterChange={setFilteredProducts}
@@ -131,12 +135,12 @@ export default function Home() {
       </div>
 
       {/* Featured Products Grid */}
-      <section id="featured-products" className="mb-16 px-8 flex flex-col items-center w-full">
+      <section id="featured-products" className="mb-16 px-4 md:px-12 flex flex-col items-center w-full">
         <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 text-center">
           Featured Printables
         </h2>
         <div className="flex justify-center w-full">
-          <div className="inline-grid min-h-[300px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
