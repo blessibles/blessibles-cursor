@@ -62,8 +62,7 @@ export default function DailyVerse() {
           <div className="text-yellow-700 text-center">Loading verse...</div>
         ) : verse ? (
           <blockquote className="text-yellow-800 italic text-center">
-            <span className="inline-block">"{verse.text}"</span>
-            <footer className="inline-block ml-2 text-yellow-900 font-semibold">— {verse.reference}</footer>
+            "{verse.text}" — {verse.reference}
           </blockquote>
         ) : (
           <div className="text-red-600 text-center">Could not load verse.</div>
