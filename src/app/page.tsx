@@ -13,6 +13,7 @@ const categories = [
   { label: 'Wall Art', value: 'wall-art' },
   { label: 'Journals', value: 'journals' },
   { label: 'Activities', value: 'activities' },
+  { label: 'Planners', value: 'planners' },
 ];
 
 const ProductModal = dynamic(() => import('../components/ProductModal'), { ssr: false });
@@ -56,91 +57,135 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-blue-50 flex flex-col items-center w-full">
-      {/* Modern Hero Section */}
-      <section className="w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-16 py-10 md:py-16 bg-gradient-to-r from-blue-100 via-white to-blue-50 border-b border-blue-100 shadow-sm">
-        <div className="flex-1 text-left md:pr-12">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-blue-900 mb-3 leading-tight drop-shadow-lg">
-            Beautiful Christian Printables
-          </h1>
-          <p className="text-lg md:text-xl text-blue-700 mb-4 font-medium">
-            Faith-filled resources for families, teachers, and churches.
-          </p>
-          <p className="text-base md:text-lg text-blue-600 mb-6">
-            Explore our curated collection of wall art, journals, activities, and more—designed to inspire and encourage.
-          </p>
-          <a
-            href="#featured-products"
-            className="inline-block bg-blue-700 text-white px-7 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-800 transition"
-          >
-            Shop Featured Printables
-          </a>
+    <main className="min-h-screen bg-white flex flex-col items-center w-full">
+      {/* Modern Hero Section with Overlay - Shorter Height */}
+      <section className="relative w-full min-h-[420px] flex items-center justify-center overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/hero-bg.jpg"
+            alt=""
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-800/80" />
         </div>
-        <div className="flex-1 flex justify-center mt-8 md:mt-0">
-          <Image src="/hero-preview.png" alt="Blessibles Printables" width={340} height={340} className="rounded-xl shadow-lg border border-blue-100 object-contain bg-white" />
+        
+        {/* Hero Content */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="text-white space-y-4">
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+                Beautiful Christian Printables
+              </h1>
+              <p className="text-xl text-blue-100 font-medium">
+                Faith-filled resources for families, teachers, and churches.
+              </p>
+              <p className="text-lg text-blue-50">
+                Explore our curated collection of wall art, journals, activities, and more.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <a
+                  href="#featured-products"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white text-blue-900 rounded-lg font-semibold shadow-lg hover:bg-blue-50 transition-all duration-300 transform hover:scale-105"
+                >
+                  Shop Featured Printables
+                </a>
+                <a
+                  href="/categories"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-transparent text-white border-2 border-white rounded-lg font-semibold hover:bg-white/10 transition-all duration-300"
+                >
+                  Browse Categories
+                </a>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <div className="relative w-full aspect-square max-w-md mx-auto">
+                <Image
+                  src="/hero-preview.png"
+                  alt="Blessibles Printables Preview"
+                  fill
+                  className="object-contain drop-shadow-2xl"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="w-full flex flex-col md:flex-row justify-center items-center gap-12 mb-12 px-8 mt-8">
-        <div className="flex flex-col items-center">
-          <Image src="/icons/heart.svg" alt="Faith-Based" width={40} height={40} />
-          <span className="mt-2 text-blue-800 font-semibold">Faith-Based</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <Image src="/icons/star.svg" alt="5-Star Reviews" width={40} height={40} />
-          <span className="mt-2 text-blue-800 font-semibold">5-Star Reviews</span>
-        </div>
-        <div className="flex flex-col items-center">
-          <Image src="/icons/shield.svg" alt="Secure Checkout" width={40} height={40} />
-          <span className="mt-2 text-blue-800 font-semibold">Secure Checkout</span>
+      {/* Category Navigation */}
+      <section className="w-full bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl font-bold text-blue-900 mb-8 text-center">Shop by Category</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {categories.filter(cat => cat.value !== 'all').map((category) => (
+              <a
+                key={category.value}
+                href={`/categories/${category.value}`}
+                className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300"
+              >
+                <div className="aspect-square relative">
+                  <Image
+                    src={`/categories/${category.value}.jpg`}
+                    alt={category.label}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <h3 className="text-white font-semibold text-lg">{category.label}</h3>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Search and Category Filter Bar */}
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-          <div className="flex-1 w-full">
-            <SearchBar
-              items={products}
-              onSearch={setSearchResults}
-              placeholder="Search for printables..."
-              className="w-full"
-            />
-          </div>
-          <div className="w-full md:w-64">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
-            >
-              <option value="all">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
+      {/* Search and Filter Section */}
+      <section className="w-full bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+              <div className="flex-1 w-full">
+                <SearchBar
+                  items={products}
+                  onSearch={setSearchResults}
+                  placeholder="Search for printables..."
+                  className="w-full"
+                />
+              </div>
+              <div className="w-full md:w-64">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map((category) => (
+                    <option key={category.value} value={category.value}>
+                      {category.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Product Filters */}
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <ProductFilters
-          products={filteredProducts}
-          onFilterChange={setFilteredProducts}
-          className="bg-gray-50 p-4 rounded-lg"
-        />
-      </div>
+      </section>
 
       {/* Featured Products Grid */}
-      <section id="featured-products" className="mb-16 px-4 md:px-12 flex flex-col items-center w-full">
-        <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-6 text-center">
-          Featured Printables
-        </h2>
-        <div className="flex justify-center w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
+      <section id="featured-products" className="w-full bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-blue-900">Featured Printables</h2>
+            <a href="/products" className="text-blue-600 hover:text-blue-800 font-semibold">
+              View All →
+            </a>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -157,6 +202,44 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Newsletter Section */}
+      <section className="w-full bg-gradient-to-br from-blue-900 to-blue-800 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Join Our Community
+          </h2>
+          <p className="text-blue-100 text-lg mb-8">
+            Get weekly inspiration, new printables, and special offers delivered to your inbox.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto" onSubmit={handleNewsletterSubmit}>
+            <div className="flex-1">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full px-6 py-3 rounded-lg border-2 border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white/10 text-blue-900 placeholder-blue-400"
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
+                disabled={newsletterSubmitting}
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-8 py-3 bg-white text-blue-900 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-300 transform hover:scale-105"
+              disabled={newsletterSubmitting}
+            >
+              {newsletterSubmitting ? 'Subscribing...' : 'Subscribe'}
+            </button>
+          </form>
+          {newsletterMessage && (
+            <div className="mt-4 text-green-300 font-semibold">{newsletterMessage}</div>
+          )}
+          {newsletterError && (
+            <div className="mt-4 text-red-300 font-semibold">{newsletterError}</div>
+          )}
+        </div>
+      </section>
+
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
@@ -164,39 +247,6 @@ export default function Home() {
           onClose={() => setModalOpen(false)}
         />
       )}
-
-      {/* Newsletter Signup */}
-      <section className="w-full bg-blue-50 py-12 px-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-blue-900 mb-4">
-            Join Our Newsletter
-          </h2>
-          <p className="text-blue-700 mb-6">
-            Get weekly inspiration, new printables, and special offers delivered to your inbox.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-2 justify-center" onSubmit={handleNewsletterSubmit}>
-            {/* ARIA live region for newsletter feedback */}
-            <div aria-live="polite" className="sr-only">{newsletterMessage || newsletterError}</div>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="px-4 py-2 rounded-lg border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200 flex-grow max-w-md"
-              value={newsletterEmail}
-              onChange={e => setNewsletterEmail(e.target.value)}
-              disabled={newsletterSubmitting}
-            />
-            <button
-              type="submit"
-              className="bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition"
-              disabled={newsletterSubmitting}
-            >
-              {newsletterSubmitting ? 'Subscribing...' : 'Subscribe'}
-            </button>
-          </form>
-          {newsletterMessage && <div className="text-green-700 font-semibold mt-2">{newsletterMessage}</div>}
-          {newsletterError && <div className="text-red-600 font-semibold mt-2">{newsletterError}</div>}
-        </div>
-      </section>
     </main>
   );
 }

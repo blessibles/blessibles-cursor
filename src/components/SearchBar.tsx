@@ -63,7 +63,7 @@ export default function SearchBar({ items, onSearch, placeholder = 'Search...', 
         onChange={(e) => handleSearch(e.target.value)}
         onFocus={() => query.length >= 2 && setShowSuggestions(true)}
         placeholder={placeholder}
-        className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+        className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 text-blue-900 placeholder-blue-400"
       />
       {showSuggestions && suggestions.length > 0 && (
         <div
