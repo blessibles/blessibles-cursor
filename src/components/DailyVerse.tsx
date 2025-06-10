@@ -55,24 +55,21 @@ export default function DailyVerse() {
   }, []);
 
   return (
-    <section className="w-full bg-yellow-50 py-3 px-4 flex items-center justify-center border-b border-yellow-200">
-      <div className="max-w-6xl w-full flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
-        <div className="flex flex-col items-center whitespace-nowrap">
-          <h2 className="text-sm font-bold text-yellow-900">Daily</h2>
-          <h2 className="text-sm font-bold text-yellow-900">Scripture</h2>
-        </div>
+    <section className="w-full bg-yellow-50 py-3 px-4 flex flex-col items-center justify-center border-b border-yellow-200">
+      <h2 className="text-sm font-bold text-yellow-900 mb-2">Daily Scripture</h2>
+      <div className="max-w-6xl w-full">
         {loading ? (
-          <div className="text-yellow-700">Loading verse...</div>
+          <div className="text-yellow-700 text-center">Loading verse...</div>
         ) : verse ? (
-          <blockquote className="text-yellow-800 italic text-center md:text-left flex-1">
+          <blockquote className="text-yellow-800 italic text-center">
             <span className="inline-block">"{verse.text}"</span>
             <footer className="inline-block ml-2 text-yellow-900 font-semibold">— {verse.reference}</footer>
           </blockquote>
         ) : (
-          <div className="text-red-600">Could not load verse.</div>
+          <div className="text-red-600 text-center">Could not load verse.</div>
         )}
       </div>
-      {error && <div className="text-yellow-700 text-xs mt-1">{error}</div>}
+      {error && <div className="text-yellow-700 text-xs mt-1 text-center">{error}</div>}
     </section>
   );
 } 
