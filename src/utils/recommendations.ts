@@ -93,69 +93,98 @@ export async function getTrendingProducts(
   limit: number = 4,
   timeFrame: 'day' | 'week' | 'month' = 'week'
 ): Promise<SearchableItem[]> {
-  const timeFrameMap = {
-    day: '1 day',
-    week: '7 days',
-    month: '30 days'
-  };
-
   try {
-    // First get the trending product IDs
-    const { data: trendingProducts, error } = await supabase
-      .from('user_interactions')
-      .select('product_id')
-      .gte('created_at', `now() - interval '${timeFrameMap[timeFrame]}'`)
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) {
-      console.error('Error getting trending products:', error);
-      // If there's an error or no interactions yet, return the most recent products
-      const { data: recentProducts, error: recentError } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (recentError) {
-        console.error('Error getting recent products:', recentError);
-        throw recentError;
-      }
-
-      return recentProducts as SearchableItem[];
-    }
-
-    // If there are no trending products yet, return the most recent products
-    if (!trendingProducts || trendingProducts.length === 0) {
-      const { data: recentProducts, error: recentError } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (recentError) {
-        console.error('Error getting recent products:', recentError);
-        throw recentError;
-      }
-
-      return recentProducts as SearchableItem[];
-    }
-
-    // Get full product details for the trending products
+    // First, let's check if we have any products at all
     const { data: products, error: productsError } = await supabase
       .from('products')
       .select('*')
-      .in('id', trendingProducts.map((p: { product_id: string }) => p.product_id));
+      .order('created_at', { ascending: false })
+      .limit(limit);
 
     if (productsError) {
-      console.error('Error getting product details:', productsError);
-      throw productsError;
+      console.error('Error checking products:', productsError);
+      return [];
     }
 
-    return products as SearchableItem[];
+    if (!products || products.length === 0) {
+      console.log('No products found in database');
+      return [];
+    }
+
+    // Now try to get trending products
+    const { data: trendingProducts, error: trendingError } = await supabase
+      .from('user_interactions')
+      .select('product_id')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (trendingError) {
+      console.error('Error getting trending products:', trendingError);
+      // Return the most recent products as fallback
+      return products as SearchableItem[];
+    }
+
+    if (!trendingProducts || trendingProducts.length === 0) {
+      console.log('No trending products found, returning recent products');
+      return products as SearchableItem[];
+    }
+
+    // Get the product IDs from trending products
+    const productIds = trendingProducts
+      .filter((p): p is { product_id: string } => p !== null && typeof p.product_id === 'string')
+      .map(p => p.product_id);
+
+    if (productIds.length === 0) {
+      console.log('No valid product IDs in trending products');
+      return products as SearchableItem[];
+    }
+
+    // Get the full product details for trending products
+    const { data: trendingProductDetails, error: detailsError } = await supabase
+      .from('products')
+      .select('*')
+      .in('id', productIds);
+
+    if (detailsError) {
+      console.error('Error getting trending product details:', detailsError);
+      return products as SearchableItem[];
+    }
+
+    if (!trendingProductDetails || trendingProductDetails.length === 0) {
+      console.log('No trending product details found');
+      return products as SearchableItem[];
+    }
+
+    return trendingProductDetails as SearchableItem[];
   } catch (err) {
-    console.error('Error in getTrendingProducts:', err);
-    // Return empty array as fallback
+    console.error('Unexpected error in getTrendingProducts:', err);
+    // Return empty array as last resort
+    return [];
+  }
+}
+
+// Helper function to get recent products
+async function getRecentProducts(limit: number): Promise<SearchableItem[]> {
+  try {
+    const { data: recentProducts, error: recentError } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (recentError) {
+      console.error('Error getting recent products:', recentError);
+      return [];
+    }
+
+    if (!recentProducts || recentProducts.length === 0) {
+      console.log('No recent products found');
+      return [];
+    }
+
+    return recentProducts as SearchableItem[];
+  } catch (err) {
+    console.error('Error in getRecentProducts:', err);
     return [];
   }
 } 

@@ -41,10 +41,15 @@ export default function ProductRecommendations({
             }
             const userRecs = await getUserRecommendations(userId, limit);
             // Fetch full product details for each recommendation
-            const { data: personalProducts } = await supabase
+            const { data: personalProducts, error: personalError } = await supabase
               .from('products')
               .select('*')
               .in('id', userRecs.map(r => r.product_id));
+            
+            if (personalError) {
+              throw new Error(`Error fetching personal products: ${personalError.message}`);
+            }
+            
             recommendations = personalProducts || [];
             break;
 
@@ -60,10 +65,15 @@ export default function ProductRecommendations({
             break;
         }
 
-        setProducts(recommendations);
+        if (!recommendations || recommendations.length === 0) {
+          console.log(`No ${type} recommendations found`);
+          setError(`No ${type} recommendations available at this time`);
+        } else {
+          setProducts(recommendations);
+        }
       } catch (err) {
         console.error('Error fetching recommendations:', err);
-        setError('Failed to load recommendations');
+        setError(err instanceof Error ? err.message : 'Failed to load recommendations');
       } finally {
         setLoading(false);
       }
