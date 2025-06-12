@@ -158,7 +158,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </nav>
           </header>
           <DailyVerse />
-          <main id="main-content" className="flex-1 w-full flex flex-col items-center justify-start">
+          <main id="main-content" className="flex-1 w-full">
             {children}
           </main>
           {/* Footer */}
