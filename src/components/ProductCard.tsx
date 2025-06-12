@@ -12,8 +12,8 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="group relative">
       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200">
         <Image
-          src={product.image_url}
-          alt={product.name}
+          src={product.image_url || '/placeholder.png'}
+          alt={product.name || `${product.category} product`}
           width={500}
           height={500}
           className="h-full w-full object-cover object-center group-hover:opacity-75"

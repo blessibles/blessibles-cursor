@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import ProductCard from '../components/ProductCard';
+import { ProductCard } from '../components/ProductCard';
 import SearchBar from '../components/SearchBar';
 import { useState, useEffect } from 'react';
 import { SearchableItem } from '../utils/search';
@@ -69,7 +69,7 @@ export default function Home() {
         <div className="absolute inset-0 z-0">
           <Image
             src="/placeholder.png"
-            alt=""
+            alt="Beautiful Christian Printables Hero Background"
             fill
             className="object-cover"
             priority
@@ -194,12 +194,17 @@ export default function Home() {
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
-                id={product.id}
-                title={product.title}
-                price={9.99}
-                imageUrl={product.imageUrl}
-                onView={() => router.push(`/products/${product.id}`)}
-                onAddToCart={() => addToCart(product)}
+                product={{
+                  id: product.id,
+                  name: (product as any).title || product.name,
+                  description: product.description,
+                  price: product.price,
+                  image_url: (product as any).imageUrl || product.image_url,
+                  category: product.category,
+                  created_at: product.created_at || new Date().toISOString(),
+                  updated_at: product.updated_at || new Date().toISOString(),
+                  tags: product.tags
+                }}
               />
             ))}
           </div>
