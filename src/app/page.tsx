@@ -7,6 +7,8 @@ import { SearchableItem } from '../utils/search';
 import ProductFilters from '../components/ProductFilters';
 import products from '../data/products';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { useCart } from '../app/layout';
 
 const categories = [
   { label: 'All', value: 'all' },
@@ -19,6 +21,7 @@ const categories = [
 const ProductModal = dynamic(() => import('../components/ProductModal'), { ssr: false });
 
 export default function Home() {
+  const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchResults, setSearchResults] = useState<SearchableItem[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<SearchableItem[]>(products);
@@ -28,6 +31,7 @@ export default function Home() {
   const [newsletterMessage, setNewsletterMessage] = useState('');
   const [newsletterError, setNewsletterError] = useState('');
   const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
+  const router = useRouter();
 
   // Update filtered products when search results or category changes
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function Home() {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/hero-bg.jpg"
+            src="/placeholder.png"
             alt=""
             fill
             className="object-cover"
@@ -103,7 +107,7 @@ export default function Home() {
             <div className="hidden lg:block">
               <div className="relative w-full aspect-square max-w-md mx-auto">
                 <Image
-                  src="/hero-preview.png"
+                  src="/placeholder.png"
                   alt="Blessibles Printables Preview"
                   fill
                   className="object-contain drop-shadow-2xl"
@@ -124,7 +128,7 @@ export default function Home() {
               <a
                 key={category.value}
                 href={`/categories/${category.value}`}
-                className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300"
+                className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300 opacity-0 translate-y-6 animate-fade-in-up"
               >
                 <div className="aspect-square relative">
                   <Image
@@ -191,14 +195,36 @@ export default function Home() {
                 key={product.id}
                 id={product.id}
                 title={product.title}
-                description={product.description || ''}
+                price={9.99}
                 imageUrl={product.imageUrl}
-                onView={() => {
-                  setSelectedProduct(product);
-                  setModalOpen(true);
-                }}
+                onView={() => router.push(`/products/${product.id}`)}
+                onAddToCart={() => addToCart({ title: product.title, quantity: 1 })}
               />
             ))}
+            {/* Gift Card Product */}
+            <ProductCard
+              id="gift-card"
+              title="Gift Card"
+              price={9.99}
+              imageUrl="/placeholder.png"
+              onView={() => router.push('/products/gift-card')}
+              onAddToCart={() => addToCart({ title: 'Gift Card', quantity: 1 })}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonial Carousel Placeholder */}
+      <section className="w-full bg-blue-50 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-blue-900 mb-6">What Our Customers Say</h2>
+          <div className="bg-white rounded-xl shadow-lg p-8 mb-4">
+            <p className="text-blue-700 text-lg mb-2">Testimonial carousel coming soon!</p>
+            <div className="flex justify-center gap-2 mt-4">
+              <span className="w-3 h-3 bg-blue-200 rounded-full inline-block"></span>
+              <span className="w-3 h-3 bg-blue-400 rounded-full inline-block"></span>
+              <span className="w-3 h-3 bg-blue-200 rounded-full inline-block"></span>
+            </div>
           </div>
         </div>
       </section>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { use } from "react";
 import { supabase } from '../../../../utils/supabaseClient';
 
 interface User {
@@ -61,8 +62,8 @@ interface AuditLogEntry {
   };
 }
 
-export default async function Page({ params }: { params: Promise<{ userId: string }> }) {
-  const { userId } = await params;
+export default function Page({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = use(params);
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
