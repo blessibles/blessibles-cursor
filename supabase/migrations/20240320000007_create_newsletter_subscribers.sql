@@ -2,18 +2,10 @@
 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     email TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    confirmed BOOLEAN DEFAULT false,
-    confirmation_token TEXT,
-    unsubscribed BOOLEAN DEFAULT false,
+    subscribed_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     unsubscribed_at TIMESTAMP WITH TIME ZONE,
-    metadata JSONB DEFAULT '{}'::jsonb
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
-
--- Create indexes for faster queries
-CREATE INDEX IF NOT EXISTS newsletter_subscribers_email_idx ON newsletter_subscribers(email);
-CREATE INDEX IF NOT EXISTS newsletter_subscribers_created_at_idx ON newsletter_subscribers(created_at);
-CREATE INDEX IF NOT EXISTS newsletter_subscribers_confirmed_idx ON newsletter_subscribers(confirmed);
 
 -- Enable Row Level Security
 ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
@@ -23,21 +15,23 @@ CREATE POLICY "Admins can view all subscribers"
     ON newsletter_subscribers FOR SELECT
     USING (
         EXISTS (
-            SELECT 1 FROM users
-            WHERE users.id = auth.uid()
-            AND users.role = 'admin'
+            SELECT 1 FROM auth.users
+            WHERE auth.users.id = auth.uid()
+            AND auth.users.role = 'admin'
         )
     );
 
-CREATE POLICY "Anyone can subscribe"
+CREATE POLICY "Anyone can insert subscribers"
     ON newsletter_subscribers FOR INSERT
     WITH CHECK (true);
 
-CREATE POLICY "Users can unsubscribe themselves"
+CREATE POLICY "Subscribers can update their own record"
     ON newsletter_subscribers FOR UPDATE
-    USING (
-        email = auth.jwt()->>'email'
-    )
-    WITH CHECK (
-        email = auth.jwt()->>'email'
-    ); 
+    USING (user_id = auth.uid());
+
+CREATE POLICY "Subscribers can delete their own record"
+    ON newsletter_subscribers FOR DELETE
+    USING (user_id = auth.uid());
+
+-- Index for faster queries
+CREATE INDEX IF NOT EXISTS newsletter_subscribers_subscribed_at_idx ON newsletter_subscribers(subscribed_at); 

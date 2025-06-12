@@ -13,10 +13,19 @@ interface ProductCardProps {
 
 export default function ProductCard({ id, title, price, imageUrl, onView, onAddToCart, badge }: ProductCardProps) {
   const { addToCart } = useCart();
-  // Demo: hardcoded price and category for schema. In a real app, pass these as props.
-  const category = id === '1' ? 'Wall Art' : id === '2' ? 'Journals' : id === '3' ? 'Activities' : 'Gift Card';
-  const rating = id === '1' ? 4.8 : id === '2' ? 4.9 : id === '3' ? 4.7 : 5.0;
-  const reviews = id === '1' ? 124 : id === '2' ? 89 : id === '3' ? 56 : 12;
+  // Get category from the product ID
+  const category = id === '11111111-1111-1111-1111-111111111111' ? 'Wall Art' : 
+                  id === '22222222-2222-2222-2222-222222222222' ? 'Journals' : 
+                  id === '33333333-3333-3333-3333-333333333333' ? 'Activities' : 
+                  'Gift Card';
+  const rating = id === '11111111-1111-1111-1111-111111111111' ? 4.8 : 
+                id === '22222222-2222-2222-2222-222222222222' ? 4.9 : 
+                id === '33333333-3333-3333-3333-333333333333' ? 4.7 : 
+                5.0;
+  const reviews = id === '11111111-1111-1111-1111-111111111111' ? 124 : 
+                 id === '22222222-2222-2222-2222-222222222222' ? 89 : 
+                 id === '33333333-3333-3333-3333-333333333333' ? 56 : 
+                 12;
   const productSchema = {
     '@context': 'https://schema.org/',
     '@type': 'Product',

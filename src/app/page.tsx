@@ -9,6 +9,7 @@ import products from '../data/products';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../app/layout';
+import ProductRecommendations from '../components/ProductRecommendations';
 
 const categories = [
   { label: 'All', value: 'all' },
@@ -198,19 +199,21 @@ export default function Home() {
                 price={9.99}
                 imageUrl={product.imageUrl}
                 onView={() => router.push(`/products/${product.id}`)}
-                onAddToCart={() => addToCart({ title: product.title, quantity: 1 })}
+                onAddToCart={() => addToCart(product)}
               />
             ))}
-            {/* Gift Card Product */}
-            <ProductCard
-              id="gift-card"
-              title="Gift Card"
-              price={9.99}
-              imageUrl="/placeholder.png"
-              onView={() => router.push('/products/gift-card')}
-              onAddToCart={() => addToCart({ title: 'Gift Card', quantity: 1 })}
-            />
           </div>
+        </div>
+      </section>
+
+      {/* Trending Products */}
+      <section className="w-full bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ProductRecommendations
+            type="trending"
+            title="Trending Now"
+            limit={4}
+          />
         </div>
       </section>
 

@@ -2,7 +2,7 @@ import { SearchableItem } from '../utils/search';
 
 const products: SearchableItem[] = [
   {
-    id: '1',
+    id: '11111111-1111-1111-1111-111111111111',
     title: 'Scripture Wall Art',
     description: 'Inspire your home with beautiful verses.',
     imageUrl: '/products/scripture-wall-art.jpg',
@@ -16,7 +16,7 @@ const products: SearchableItem[] = [
     sale: false,
   },
   {
-    id: '2',
+    id: '22222222-2222-2222-2222-222222222222',
     title: 'Family Prayer Journal',
     description: 'Grow together in faith and gratitude.',
     imageUrl: '/products/family-prayer-journal.jpg',
@@ -31,7 +31,7 @@ const products: SearchableItem[] = [
     salePrice: 7.99,
   },
   {
-    id: '3',
+    id: '33333333-3333-3333-3333-333333333333',
     title: "Kids' Bible Activities",
     description: 'Fun, faith-filled activities for children.',
     imageUrl: '/products/kids-bible-activities.jpg',
@@ -45,7 +45,7 @@ const products: SearchableItem[] = [
     sale: false,
   },
   {
-    id: '4',
+    id: '44444444-4444-4444-4444-444444444444',
     title: 'Blessibles Digital Gift Card',
     description: 'Give the gift of choice! Instantly delivered by email, redeemable for any printable.',
     imageUrl: '/products/gift-card.jpg',

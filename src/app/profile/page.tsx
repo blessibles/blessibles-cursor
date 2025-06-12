@@ -1,7 +1,10 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../../utils/supabaseClient';
+import ProductRecommendations from '../../components/ProductRecommendations';
+import CollectionManager from '../../components/CollectionManager';
 
 interface User {
   id: string;
@@ -31,6 +34,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const router = useRouter();
 
   // Profile/account state
   const [name, setName] = useState('');
@@ -109,6 +113,8 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white px-4 w-full">
       <h1 className="text-3xl font-bold text-blue-900 mb-4">Your Profile</h1>
+      
+      {/* Profile Information */}
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8 w-full max-w-md flex flex-col gap-4 mb-8">
         <label className="font-semibold text-blue-800">Name
           <input
@@ -141,6 +147,8 @@ export default function ProfilePage() {
         </button>
         {success && <div className="text-green-700 text-center font-semibold mt-2">Profile updated!</div>}
       </form>
+
+      {/* Password Update */}
       <form onSubmit={handlePasswordSubmit} className="bg-white rounded-lg shadow-md p-8 w-full max-w-md flex flex-col gap-4 mb-8">
         <h2 className="text-xl font-bold text-blue-900 mb-2">Change Password</h2>
         <label className="font-semibold text-blue-800">New Password
@@ -174,6 +182,8 @@ export default function ProfilePage() {
         </button>
         {passwordSuccess && <div className="text-green-700 text-center font-semibold mt-2">Password updated!</div>}
       </form>
+
+      {/* Order History */}
       <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-md flex flex-col gap-4 mb-8">
         <h2 className="text-xl font-bold text-blue-900 mb-2">Order History</h2>
         {loadingOrders ? (
@@ -198,22 +208,33 @@ export default function ProfilePage() {
                     <span className="text-gray-700">Qty: {item.quantity}</span>
                     <span className="text-gray-700">{item.price}</span>
                     {item.download_url && (
-                      <a
-                        href={`/api/download/${item.id}`}
-                        className="ml-2 bg-blue-600 text-white px-2 py-1 rounded font-semibold hover:bg-blue-700 transition text-xs"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <Link href={item.download_url} className="text-blue-600 hover:text-blue-800">
                         Download
-                      </a>
+                      </Link>
                     )}
                   </div>
                 ))}
               </div>
-              <Link href={`/order-history/${order.id}`} className="text-blue-600 hover:underline text-sm mt-2">View Details</Link>
             </div>
           ))
         )}
+      </div>
+
+      {/* Collections Section */}
+      <div className="w-full max-w-4xl mb-8">
+        <CollectionManager
+          onSelect={(collectionId) => router.push(`/collections/${collectionId}`)}
+        />
+      </div>
+
+      {/* Personalized Recommendations */}
+      <div className="w-full max-w-4xl">
+        <ProductRecommendations
+          userId={user.id}
+          type="personal"
+          title="Recommended for You"
+          limit={4}
+        />
       </div>
     </div>
   );
