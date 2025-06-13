@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import SearchBar from '@/components/SearchBar';
 import { Product } from '@/types';
 import products from '@/data/products';
@@ -26,6 +26,27 @@ export default function SearchTest() {
     { label: 'Name: A-Z', value: 'name-asc' },
     { label: 'Name: Z-A', value: 'name-desc' },
   ];
+
+  // Filter and sort search results
+  const filteredResults = searchResults
+    .filter(product => selectedCategory === 'all' || product.category === selectedCategory)
+    .sort((a, b) => {
+      if (sortOption === 'price-asc') return a.price - b.price;
+      if (sortOption === 'price-desc') return b.price - a.price;
+      if (sortOption === 'name-asc') return a.name.localeCompare(b.name);
+      if (sortOption === 'name-desc') return b.name.localeCompare(a.name);
+      return 0; // relevance (default)
+    });
+
+  // Personalized recommendations: products from the same category as the first search result, or random
+  const recommendations = useMemo(() => {
+    if (filteredResults.length > 0) {
+      const category = filteredResults[0].category;
+      return products.filter(p => p.category === category && !filteredResults.some(r => r.id === p.id)).slice(0, 3);
+    }
+    // If no search, show 3 random products
+    return products.sort(() => 0.5 - Math.random()).slice(0, 3);
+  }, [filteredResults]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -74,7 +95,7 @@ export default function SearchTest() {
               Search Results ({searchResults.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {searchResults.map((product) => (
+              {filteredResults.map((product) => (
                 <div
                   key={product.id}
                   className="bg-white border border-blue-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
@@ -112,6 +133,37 @@ export default function SearchTest() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Recommendations Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mt-8">
+          <h2 className="text-xl font-semibold text-blue-900 mb-4">You Might Also Like</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recommendations.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white border border-blue-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="relative h-32">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-lg font-medium text-blue-900">{product.name}</h3>
+                  <p className="text-sm text-blue-600 mt-1">{product.category}</p>
+                  <div className="mt-2 flex justify-between items-center">
+                    <span className="text-lg font-semibold text-blue-900">
+                      ${product.price.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
