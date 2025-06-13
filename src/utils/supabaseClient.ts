@@ -1,6 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://tjmolhxvxujpkdwqstjk.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqbW9saHh2eHVqcGtkd3FzdGprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyOTU1NjQsImV4cCI6MjA2NDg3MTU2NH0.FXCjfviDpPgE6_NZ1oe-CHZlbMypEVW85pZqgi15YZw';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+console.log('Supabase URL:', supabaseUrl);
+
+if (!supabaseUrl) throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL');
+if (!supabaseAnonKey) throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey); 

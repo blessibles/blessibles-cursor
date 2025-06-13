@@ -1,3 +1,4 @@
+"use client";
 import { useState, ChangeEvent } from 'react';
 import { useCollections } from '../hooks/useCollections';
 import { useAuth } from '../hooks/useAuth';
@@ -9,7 +10,11 @@ import { Label } from './ui/label';
 import { Card } from './ui/card';
 import { Plus, Trash2, Edit2, Eye, EyeOff } from 'lucide-react';
 
-export function CollectionManager() {
+interface CollectionManagerProps {
+  onSelect?: (collectionId: string) => void;
+}
+
+export function CollectionManager({ onSelect }: CollectionManagerProps) {
   const { user } = useAuth();
   const {
     collections,
@@ -161,7 +166,7 @@ export function CollectionManager() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {collections.map((collection) => (
-          <Card key={collection.id} className="p-4">
+          <Card key={collection.id} className="p-4" onClick={() => onSelect && onSelect(collection.id)} style={{ cursor: onSelect ? 'pointer' : 'default' }}>
             {editingId === collection.id ? (
               <div className="space-y-4">
                 <Input
@@ -222,7 +227,8 @@ export function CollectionManager() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setEditingId(collection.id);
                       setEditForm({
                         name: collection.name,
@@ -236,7 +242,10 @@ export function CollectionManager() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(collection.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(collection.id);
+                    }}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -248,4 +257,6 @@ export function CollectionManager() {
       </div>
     </div>
   );
-} 
+}
+
+export default CollectionManager; 

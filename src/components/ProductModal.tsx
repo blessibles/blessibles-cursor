@@ -85,7 +85,7 @@ export default function ProductModal({ product, open, onClose }: ProductModalPro
           <div className="flex-shrink-0 flex items-center justify-center w-full md:w-1/2">
             <div className="relative w-48 h-48">
               <Image
-                src={product.imageUrl}
+                src={product.imageUrl || '/placeholder.png'}
                 alt={product.title}
                 fill
                 className="object-contain rounded"

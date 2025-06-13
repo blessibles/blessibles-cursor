@@ -3,8 +3,15 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  image_url: string;
+  image: string;
+  images?: string[];
   category: string;
-  created_at: string;
-  updated_at: string;
+  tags?: string[];
+  sale?: boolean;
+  salePrice?: number;
+  bestseller?: boolean;
+  new?: boolean;
+  rating?: number;
+  createdAt: Date;
+  updatedAt: Date;
 } 

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS user_interactions (
     product_id UUID REFERENCES products(id) ON DELETE CASCADE,
     interaction_type TEXT NOT NULL CHECK (interaction_type IN ('view', 'wishlist', 'purchase', 'cart_add', 'cart_remove')),
     metadata JSONB DEFAULT '{}'::jsonb,
+    count INTEGER DEFAULT 1,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
@@ -13,6 +14,7 @@ CREATE INDEX IF NOT EXISTS user_interactions_user_id_idx ON user_interactions(us
 CREATE INDEX IF NOT EXISTS user_interactions_product_id_idx ON user_interactions(product_id);
 CREATE INDEX IF NOT EXISTS user_interactions_interaction_type_idx ON user_interactions(interaction_type);
 CREATE INDEX IF NOT EXISTS user_interactions_created_at_idx ON user_interactions(created_at);
+CREATE INDEX IF NOT EXISTS user_interactions_count_idx ON user_interactions(count);
 
 -- Enable Row Level Security
 ALTER TABLE user_interactions ENABLE ROW LEVEL SECURITY;

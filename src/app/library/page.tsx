@@ -44,7 +44,14 @@ export default function LibraryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl">
           {products.filter((p) => purchased.includes(p.id)).map((product) => (
             <div key={product.id} className="bg-white rounded-lg shadow p-4 flex flex-col items-center">
-              <Image src={product.imageUrl} alt={product.title} width={128} height={128} className="w-32 h-32 object-contain mb-3" loading="lazy" />
+              <Image 
+                src={product.image_url || '/placeholder.png'} 
+                alt={`${product.name} - ${product.category}`} 
+                width={128} 
+                height={128} 
+                className="w-32 h-32 object-contain mb-3" 
+                loading="lazy" 
+              />
               <h3 className="font-semibold text-blue-800 mb-1 text-center">{product.title}</h3>
               <p className="text-sm text-blue-600 mb-2 text-center">{product.description}</p>
               <a

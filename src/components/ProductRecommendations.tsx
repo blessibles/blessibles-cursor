@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { SearchableItem } from '../utils/search';
 import { Recommendation, getUserRecommendations, getSimilarProducts, getTrendingProducts } from '../utils/recommendations';
-import ProductCard from './ProductCard';
+import { ProductCard } from './ProductCard';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../utils/supabaseClient';
+import { useSupabase } from '../hooks/useSupabase';
+import { Product } from '@/types';
 
 interface ProductRecommendationsProps {
   userId?: string;
@@ -22,10 +23,11 @@ export default function ProductRecommendations({
   title,
   className = ''
 }: ProductRecommendationsProps) {
-  const [products, setProducts] = useState<SearchableItem[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { supabase } = useSupabase();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -33,7 +35,7 @@ export default function ProductRecommendations({
         setLoading(true);
         setError(null);
 
-        let recommendations: SearchableItem[] = [];
+        let recommendations: Product[] = [];
         switch (type) {
           case 'personal':
             if (!userId) {
@@ -80,7 +82,7 @@ export default function ProductRecommendations({
     };
 
     fetchRecommendations();
-  }, [userId, productId, type, limit]);
+  }, [userId, productId, type, limit, supabase]);
 
   if (loading) {
     return (
@@ -124,15 +126,7 @@ export default function ProductRecommendations({
         {products.map((product) => (
           <ProductCard
             key={product.id}
-            id={product.id}
-            title={product.title}
-            price={product.price || 9.99}
-            imageUrl={product.imageUrl}
-            onView={() => router.push(`/products/${product.id}`)}
-            onAddToCart={() => {
-              // Add to cart logic here
-              console.log('Add to cart:', product.id);
-            }}
+            product={product}
           />
         ))}
       </div>

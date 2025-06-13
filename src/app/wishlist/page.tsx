@@ -23,13 +23,7 @@ function WishlistContent() {
           {wishlistProducts.map((product) => (
             <ProductCard
               key={product.id}
-              id={product.id}
-              title={product.title}
-              description={product.description || ''}
-              imageUrl={product.imageUrl}
-              onView={() => alert(`View: ${product.title}`)}
-              isWishlisted={isInWishlist(product.id)}
-              onToggleWishlist={(id) => removeFromWishlist(id)}
+              product={product}
             />
           ))}
         </div>

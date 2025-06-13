@@ -25,11 +25,11 @@ export default function ProductFilters({ products, onFilterChange, className = '
     // Apply filters
     filteredProducts = filteredProducts.filter(product => {
       const price = product.sale ? product.salePrice : product.price;
-      const matchesPrice = price >= filters.priceRange.min && price <= filters.priceRange.max;
+      const matchesPrice = typeof price === 'number' && price >= (filters.priceRange?.min ?? 0) && price <= (filters.priceRange?.max ?? Infinity);
       const matchesBestseller = !filters.showBestsellers || product.bestseller;
       const matchesNew = !filters.showNew || product.new;
       const matchesSale = !filters.showSale || product.sale;
-      const matchesRating = product.rating >= filters.rating;
+      const matchesRating = (typeof product.rating === "number" ? product.rating : 0) >= filters.rating;
 
       return matchesPrice && matchesBestseller && matchesNew && matchesSale && matchesRating;
     });
@@ -38,11 +38,11 @@ export default function ProductFilters({ products, onFilterChange, className = '
     filteredProducts.sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
-          return (a.sale ? a.salePrice : a.price) - (b.sale ? b.salePrice : b.price);
+          return (a.sale ? a.salePrice ?? a.price ?? 0 : a.price ?? 0) - (b.sale ? b.salePrice ?? b.price ?? 0 : b.price ?? 0);
         case 'price-desc':
-          return (b.sale ? b.salePrice : b.price) - (a.sale ? a.salePrice : a.price);
+          return (b.sale ? b.salePrice ?? b.price ?? 0 : b.price ?? 0) - (a.sale ? a.salePrice ?? a.price ?? 0 : a.price ?? 0);
         case 'rating-desc':
-          return b.rating - a.rating;
+          return (typeof b.rating === 'number' ? b.rating : 0) - (typeof a.rating === 'number' ? a.rating : 0);
         case 'newest':
           return b.new ? 1 : -1;
         case 'bestseller':
