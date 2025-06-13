@@ -94,7 +94,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <meta name="twitter:image" content="https://blessibles.com/og-image.jpg" />
         <link rel="canonical" href="https://blessibles.com/" />
         <meta name="robots" content="index, follow" />
-        <link rel="preload" href="/fonts/Geist-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/og-image.jpg" as="image" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           '@context': 'https://schema.org',
