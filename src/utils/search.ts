@@ -54,8 +54,14 @@ export function createSearchIndex(items: SearchableItem[], options: SearchOption
     ...options,
     keys: options.keys.map(key => key.name),
     getFn: (obj, path) => {
-      const value = path.split('.').reduce((o, i) => o?.[i], obj);
-      return value || '';
+      // If path is an array, join it to a string
+      const pathStr = Array.isArray(path) ? path.join('.') : path;
+      if (typeof pathStr !== 'string') return '';
+      const value = pathStr.split('.').reduce((o, i) => (o && typeof o === 'object' ? (o as any)[i] : undefined), obj);
+      if (Array.isArray(value)) {
+        return value.join(', ');
+      }
+      return typeof value === 'string' ? value : value !== undefined ? String(value) : '';
     }
   });
 }
