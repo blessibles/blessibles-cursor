@@ -9,6 +9,7 @@ import Image from 'next/image';
 export default function SearchTest() {
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortOption, setSortOption] = useState('relevance');
 
   const categories = [
     { label: 'All', value: 'all' },
@@ -16,6 +17,14 @@ export default function SearchTest() {
     { label: 'Journals', value: 'journals' },
     { label: 'Activities', value: 'activities' },
     { label: 'Gift Cards', value: 'gift-card' },
+  ];
+
+  const sortOptions = [
+    { label: 'Relevance', value: 'relevance' },
+    { label: 'Price: Low to High', value: 'price-asc' },
+    { label: 'Price: High to Low', value: 'price-desc' },
+    { label: 'Name: A-Z', value: 'name-asc' },
+    { label: 'Name: Z-A', value: 'name-desc' },
   ];
 
   return (
@@ -34,15 +43,26 @@ export default function SearchTest() {
                 selectedCategory={selectedCategory}
               />
             </div>
-            <div className="w-full md:w-64">
+            <div className="w-full md:w-64 flex gap-2">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
+                className="w-1/2 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
               >
                 {categories.map((category) => (
                   <option key={category.value} value={category.value}>
                     {category.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="w-1/2 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
+              >
+                {sortOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
