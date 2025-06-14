@@ -115,6 +115,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
+      {/* Scripture-based Recommendations */}
+      <ProductRecommendations
+        productId={resolvedParams.id}
+        type="scripture"
+        title="Scripture-based Recommendations"
+        className="mt-12"
+      />
+
       <ProductRecommendations
         productId={resolvedParams.id}
         type="similar"

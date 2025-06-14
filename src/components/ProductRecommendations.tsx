@@ -9,7 +9,7 @@ import { Product } from '@/types';
 interface ProductRecommendationsProps {
   userId?: string;
   productId?: string;
-  type: 'personal' | 'similar' | 'trending';
+  type: 'personal' | 'similar' | 'trending' | 'scripture';
   limit?: number;
   title?: string;
   className?: string;
@@ -65,10 +65,17 @@ export default function ProductRecommendations({
           case 'trending':
             recommendations = await getTrendingProducts(limit);
             break;
+
+          case 'scripture':
+            if (!productId) {
+              throw new Error('Product ID is required for scripture-based recommendations');
+            }
+            const { getScriptureBasedRecommendations } = await import('../utils/recommendations');
+            recommendations = await getScriptureBasedRecommendations(productId, limit);
+            break;
         }
 
         if (!recommendations || recommendations.length === 0) {
-          console.log(`No ${type} recommendations found`);
           setError(`No ${type} recommendations available at this time`);
         } else {
           setProducts(recommendations);
@@ -119,7 +126,8 @@ export default function ProductRecommendations({
         {title || {
           personal: 'Recommended for You',
           similar: 'You May Also Like',
-          trending: 'Trending Now'
+          trending: 'Trending Now',
+          scripture: 'Scripture-based Recommendations',
         }[type]}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -132,4 +140,4 @@ export default function ProductRecommendations({
       </div>
     </div>
   );
-} 
+}

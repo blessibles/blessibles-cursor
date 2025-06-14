@@ -229,4 +229,60 @@ async function getRecentProducts(limit: number): Promise<Product[]> {
     console.error('Error in getRecentProducts:', err);
     return [];
   }
+}
+
+export async function getScriptureBasedRecommendations(productId: string, limit: number = 4): Promise<Product[]> {
+  // Get the product's tags
+  const { data: product, error: productError } = await supabase
+    .from('products')
+    .select('tags')
+    .eq('id', productId)
+    .single();
+
+  if (productError) {
+    console.error('Error getting product tags:', productError);
+    throw productError;
+  }
+
+  const tags: string[] = product?.tags || [];
+  // Scripture tags: look for tags with a colon (e.g., 'Philippians 4:13')
+  const scriptureTags = tags.filter(tag => /\d+:\d+/.test(tag));
+  let recProducts: Product[] = [];
+
+  if (scriptureTags.length > 0) {
+    // Find products with any of these scripture tags
+    const { data: scriptureProducts, error: scriptureError } = await supabase
+      .from('products')
+      .select('*')
+      .neq('id', productId)
+      .overlaps('tags', scriptureTags)
+      .limit(limit);
+    if (scriptureError) {
+      console.error('Error getting scripture-based products:', scriptureError);
+      throw scriptureError;
+    }
+    recProducts = scriptureProducts || [];
+  }
+
+  // If not enough, or no scripture tags, fall back to faith-based tags
+  if (recProducts.length < limit) {
+    const faithTags = tags.filter(tag => !/\d+:\d+/.test(tag));
+    if (faithTags.length > 0) {
+      const { data: tagProducts, error: tagError } = await supabase
+        .from('products')
+        .select('*')
+        .neq('id', productId)
+        .overlaps('tags', faithTags)
+        .limit(limit - recProducts.length);
+      if (tagError) {
+        console.error('Error getting tag-based products:', tagError);
+        throw tagError;
+      }
+      // Avoid duplicates
+      const tagSet = new Set(recProducts.map(p => p.id));
+      recProducts = recProducts.concat((tagProducts || []).filter(p => !tagSet.has(p.id)));
+    }
+  }
+
+  return recProducts.slice(0, limit);
 } 
