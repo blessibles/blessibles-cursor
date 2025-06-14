@@ -155,6 +155,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Link href="/" className="text-blue-900 hover:text-blue-950 font-medium">Home</Link>
                 <Link href="/products" className="text-blue-900 hover:text-blue-950 font-medium">Products</Link>
                 <Link href="/calendar" className="text-blue-900 hover:text-blue-950 font-medium">Calendar</Link>
+                <Link href="/ministry" className="text-blue-900 hover:text-blue-950 font-medium">Ministry</Link>
                 <Link href="/wishlist" className="flex items-center gap-1 text-blue-900 hover:text-blue-950 font-medium">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ef4444" className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.435 6.582a5.373 5.373 0 0 0-7.6 0l-.835.836-.835-.836a5.373 5.373 0 1 0-7.6 7.6l.836.835 7.6 7.6 7.6-7.6.836-.835a5.373 5.373 0 0 0 0-7.6z" />
