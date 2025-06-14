@@ -78,6 +78,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     initPerformanceMonitoring();
   }, []);
 
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch((err) => {
+          console.error('Service worker registration failed:', err);
+        });
+      });
+    }
+  }, []);
+
   return (
     <html lang="en">
       <head>
@@ -119,6 +129,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             'query-input': 'required name=search_term_string'
           }
         }) }} />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1e3a8a" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className="bg-gradient-to-b from-blue-50 to-white min-h-screen flex flex-col font-sans">
         <GoogleAnalytics />

@@ -1,0 +1,21 @@
+{
+  "name": "Blessibles.com | Christian Family Printables",
+  "short_name": "Blessibles",
+  "description": "Christian family printables to inspire, encourage, and organize your home. Shop wall art, journals, activities, and more!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+} 
