@@ -45,10 +45,10 @@ async function sendScheduledCampaigns() {
       .from('newsletter_campaigns')
       .update({ status: 'sending' })
       .eq('id', campaign.id);
-    // Fetch all confirmed, non-unsubscribed subscribers
+    // Fetch all confirmed, non-unsubscribed subscribers who have opted in to marketing emails
     const { data: subscribers, error: subError } = await supabase
       .from('newsletter_subscribers')
-      .select('email')
+      .select('email, user:user_id(user_preferences(marketing_emails))')
       .eq('confirmed', true)
       .eq('unsubscribed', false);
     if (subError) {
@@ -57,7 +57,10 @@ async function sendScheduledCampaigns() {
     }
     let sentCount = 0;
     const errorLog: ErrorLogEntry[] = [];
-    for (const sub of (subscribers as Subscriber[])) {
+    for (const sub of (subscribers as any[])) {
+      // Only send if user_preferences.marketing_emails is true (or if no user record, default to false)
+      const optedIn = sub.user?.user_preferences?.marketing_emails === true;
+      if (!optedIn) continue;
       try {
         const pixelUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/api/newsletter/open/${campaign.id}/${encodeURIComponent(sub.email)}`;
         const htmlWithPixel = campaign.content + `<img src=\"${pixelUrl}\" width=\"1\" height=\"1\" style=\"display:none\" alt=\"\" />`;

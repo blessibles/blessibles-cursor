@@ -153,22 +153,29 @@ function CheckoutForm() {
             
             await supabase.from('order_items').insert(orderItems);
 
-            // Send order confirmation email
+            // Send order confirmation email if user has opted in
             try {
-              await sendOrderConfirmation(
-                email,
-                orderId,
-                items.map(item => ({
-                  name: item.product.name,
-                  quantity: item.quantity,
-                  price: item.product.price,
-                })),
-                totalPrice,
-                items.map(item => ({
-                  name: item.product.name,
-                  url: `/downloads/${item.product.id}.pdf`,
-                }))
-              );
+              const { data: userPref, error: prefError } = await supabase
+                .from('user_preferences')
+                .select('order_updates')
+                .eq('user_id', userId)
+                .single();
+              if (!prefError && userPref?.order_updates) {
+                await sendOrderConfirmation(
+                  email,
+                  orderId,
+                  items.map(item => ({
+                    name: item.product.name,
+                    quantity: item.quantity,
+                    price: item.product.price,
+                  })),
+                  totalPrice,
+                  items.map(item => ({
+                    name: item.product.name,
+                    url: `/downloads/${item.product.id}.pdf`,
+                  }))
+                );
+              }
             } catch (emailError) {
               console.error('Failed to send order confirmation email:', emailError);
               // Don't block the order process if email fails
