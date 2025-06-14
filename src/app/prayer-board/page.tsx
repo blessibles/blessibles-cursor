@@ -17,6 +17,8 @@ export default function PrayerBoardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [prayedMessage, setPrayedMessage] = useState('');
   // Mock auth: assume user is logged in
   const isLoggedIn = true;
   const user = { id: 'mock-user', name: 'You' }; // Replace with real user from auth
@@ -44,6 +46,7 @@ export default function PrayerBoardPage() {
     e.preventDefault();
     setSubmitting(true);
     setError('');
+    setSuccessMessage('');
     const { error } = await supabase.from('prayer_requests').insert([
       {
         name: user.name,
@@ -56,6 +59,8 @@ export default function PrayerBoardPage() {
       setError('Failed to post prayer request.');
     } else {
       setNewRequest('');
+      setSuccessMessage('Your prayer request has been submitted!');
+      setTimeout(() => setSuccessMessage(''), 3000);
       // Re-fetch requests
       const { data } = await supabase
         .from('prayer_requests')
@@ -68,6 +73,7 @@ export default function PrayerBoardPage() {
 
   const handlePrayedFor = async (id: string) => {
     setError('');
+    setPrayedMessage('');
     const req = requests.find((r) => r.id === id);
     if (!req) return;
     const { error } = await supabase
@@ -77,6 +83,8 @@ export default function PrayerBoardPage() {
     if (error) {
       setError('Failed to update prayer count.');
     } else {
+      setPrayedMessage('Thank you for praying!');
+      setTimeout(() => setPrayedMessage(''), 2000);
       // Re-fetch requests
       const { data } = await supabase
         .from('prayer_requests')
@@ -89,6 +97,8 @@ export default function PrayerBoardPage() {
   return (
     <main className="min-h-screen flex flex-col items-center bg-gradient-to-b from-blue-50 to-white py-12">
       <h1 className="text-3xl font-bold text-blue-900 mb-8">Prayer Request Board</h1>
+      {successMessage && <div className="mb-4 text-green-700 font-semibold">{successMessage}</div>}
+      {prayedMessage && <div className="mb-4 text-green-700 font-semibold">{prayedMessage}</div>}
       <div className="w-full max-w-2xl">
         {isLoggedIn ? (
           <form onSubmit={handleSubmit} className="mb-8 bg-blue-50 p-4 rounded-lg">
