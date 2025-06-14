@@ -188,39 +188,28 @@ export default function ProfilePage() {
           </form>
           {/* Order History */}
           <div className="bg-white rounded-lg shadow-md p-8 w-full max-w-md flex flex-col gap-4 mb-8">
-            <h2 className="text-xl font-bold text-blue-900 mb-2">Order History</h2>
+            <h2 className="text-xl font-bold text-blue-900 mb-2">Recent Orders</h2>
             {loadingOrders ? (
               <div className="text-gray-500 italic">Loading orders…</div>
             ) : orders.length === 0 ? (
               <div className="text-gray-500 italic">No orders found.</div>
             ) : (
-              orders.map(order => (
-                <div key={order.id} className="border-b last:border-b-0 pb-4 mb-4">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold text-blue-800">Order #{order.id}</span>
-                    <span className="text-gray-600 text-sm">{order.date ? new Date(order.date).toLocaleDateString() : ''}</span>
+              <div className="space-y-4">
+                {orders.slice(0, 3).map(order => (
+                  <div key={order.id} className="border-b last:border-b-0 pb-2 mb-2 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                    <div>
+                      <span className="font-semibold text-blue-800">Order #{order.id}</span>
+                      <span className="ml-2 text-gray-600 text-sm">{order.date ? new Date(order.date).toLocaleDateString() : ''}</span>
+                    </div>
+                    <div className="flex flex-col sm:items-end">
+                      <span className="text-blue-900 font-medium">${order.total.toFixed(2)}</span>
+                      <span className="text-xs text-gray-500 capitalize">{order.status}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-700">Total: {order.total}</span>
-                    <span className="text-gray-700">Status: {order.status}</span>
-                  </div>
-                  <div className="flex flex-col gap-1 mt-2">
-                    {order.order_items && order.order_items.length > 0 && order.order_items.map((item: OrderItem, idx: number) => (
-                      <div key={idx} className="flex items-center gap-2 text-sm">
-                        <span className="text-blue-800 font-medium">{item.title}</span>
-                        <span className="text-gray-700">Qty: {item.quantity}</span>
-                        <span className="text-gray-700">{item.price}</span>
-                        {item.download_url && (
-                          <Link href={item.download_url} className="text-blue-600 hover:text-blue-800">
-                            Download
-                          </Link>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))
+                ))}
+              </div>
             )}
+            <a href="/account/orders" className="mt-2 text-blue-700 hover:underline text-sm font-medium self-end">View all orders & downloads →</a>
           </div>
         </div>
       </div>
