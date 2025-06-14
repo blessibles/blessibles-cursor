@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { useCart } from '../app/layout';
 import ProductRecommendations from '../components/ProductRecommendations';
+import Testimonials from '../components/Testimonials';
 
 const categories = [
   { label: 'All', value: 'all' },
@@ -199,10 +200,10 @@ export default function Home() {
                   name: (product as any).title || product.name,
                   description: product.description,
                   price: product.price,
-                  image_url: (product as any).imageUrl || product.image_url,
+                  image: (product as any).imageUrl || product.image,
                   category: product.category,
-                  created_at: product.created_at || new Date().toISOString(),
-                  updated_at: product.updated_at || new Date().toISOString(),
+                  createdAt: product.createdAt || new Date().toISOString(),
+                  updatedAt: product.updatedAt || new Date().toISOString(),
                   tags: product.tags
                 }}
               />
@@ -222,18 +223,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonial Carousel Placeholder */}
+      {/* Testimonials Section */}
       <section className="w-full bg-blue-50 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-blue-900 mb-6">What Our Customers Say</h2>
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-4">
-            <p className="text-blue-700 text-lg mb-2">Testimonial carousel coming soon!</p>
-            <div className="flex justify-center gap-2 mt-4">
-              <span className="w-3 h-3 bg-blue-200 rounded-full inline-block"></span>
-              <span className="w-3 h-3 bg-blue-400 rounded-full inline-block"></span>
-              <span className="w-3 h-3 bg-blue-200 rounded-full inline-block"></span>
-            </div>
-          </div>
+          <Testimonials limit={3} />
         </div>
       </section>
 
