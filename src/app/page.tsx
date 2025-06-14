@@ -130,13 +130,14 @@ export default function Home() {
               <a
                 key={category.value}
                 href={`/categories/${category.value}`}
-                className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300 opacity-0 translate-y-6 animate-fade-in-up"
+                className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300 fade-in-up"
               >
                 <div className="aspect-square relative">
                   <Image
                     src={`/categories/${category.value}.jpg`}
                     alt={category.label}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                     className="object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
