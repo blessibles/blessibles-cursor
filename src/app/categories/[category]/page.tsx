@@ -1,46 +1,46 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import SearchBar from "@/components/SearchBar";
 import { Product } from "@/types";
 import products from "@/data/products";
 import Image from "next/image";
 
-export default function CategoriesPage() {
+const categories = [
+  { label: "Wall Art", value: "wall-art" },
+  { label: "Journals", value: "journals" },
+  { label: "Planners", value: "planners" },
+  { label: "Coffee Mugs", value: "coffee-mugs", image: "/categories/journals.jpg" },
+  { label: "Tshirts", value: "tshirts", image: "/categories/planners.jpg" },
+  { label: "Activities", value: "activities" },
+  { label: "Gift Cards", value: "gift-card" },
+];
+
+const sortOptions = [
+  { label: "Relevance", value: "relevance" },
+  { label: "Price: Low to High", value: "price-asc" },
+  { label: "Price: High to Low", value: "price-desc" },
+  { label: "Name: A-Z", value: "name-asc" },
+  { label: "Name: Z-A", value: "name-desc" },
+];
+
+export default function CategoryPage() {
+  const params = useParams();
+  const categoryParam = params?.category as string;
+  const categoryLabel = categories.find(c => c.value === categoryParam)?.label || categoryParam;
+
   const [searchResults, setSearchResults] = useState<Product[]>(products);
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortOption, setSortOption] = useState("relevance");
   const [mounted, setMounted] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [collection, setCollection] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([]);
 
-  const categories = [
-    { label: "All", value: "all" },
-    { label: "Wall Art", value: "wall-art" },
-    { label: "Journals", value: "journals" },
-    { label: "Planners", value: "planners" },
-    { label: "Coffee Mugs", value: "coffee-mugs", image: "/categories/journals.jpg" },
-    { label: "Tshirts", value: "tshirts", image: "/categories/planners.jpg" },
-    { label: "Activities", value: "activities" },
-    { label: "Gift Cards", value: "gift-card" },
-  ];
-
-  const sortOptions = [
-    { label: "Relevance", value: "relevance" },
-    { label: "Price: Low to High", value: "price-asc" },
-    { label: "Price: High to Low", value: "price-desc" },
-    { label: "Name: A-Z", value: "name-asc" },
-    { label: "Name: Z-A", value: "name-desc" },
-  ];
-
-  // Filter and sort search results
+  // Filter and sort products by category
   const filteredResults = useMemo(() => {
     return searchResults
-      .filter(
-        (product) =>
-          selectedCategory === "all" || product.category === selectedCategory
-      )
+      .filter(product => product.category === categoryParam)
       .sort((a, b) => {
         if (sortOption === "price-asc") return a.price - b.price;
         if (sortOption === "price-desc") return b.price - a.price;
@@ -48,23 +48,14 @@ export default function CategoriesPage() {
         if (sortOption === "name-desc") return b.name.localeCompare(a.name);
         return 0; // relevance (default)
       });
-  }, [searchResults, selectedCategory, sortOption]);
+  }, [searchResults, categoryParam, sortOption]);
 
-  // Personalized recommendations: products from the same category as the first search result, or random
+  // Recommendations: other products from the same category
   const recommendations = useMemo(() => {
-    if (filteredResults.length > 0) {
-      const category = filteredResults[0].category;
-      return products
-        .filter(
-          (p) =>
-            p.category === category &&
-            !filteredResults.some((r) => r.id === p.id)
-        )
-        .slice(0, 3);
-    }
-    // If no search, show 3 random products
-    return products.slice().sort(() => 0.5 - Math.random()).slice(0, 3);
-  }, [filteredResults]);
+    return products
+      .filter(p => p.category === categoryParam && !filteredResults.some(r => r.id === p.id))
+      .slice(0, 3);
+  }, [filteredResults, categoryParam]);
 
   // Track recently viewed products in localStorage
   useEffect(() => {
@@ -143,33 +134,22 @@ export default function CategoriesPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-        <h1 className="text-2xl font-bold text-blue-900 mb-6">Browse Categories</h1>
+        <h1 className="text-2xl font-bold text-blue-900 mb-6">{categoryLabel}</h1>
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center mb-6">
           <div className="flex-1 w-full">
             <SearchBar
-              items={products}
+              items={products.filter(p => p.category === categoryParam)}
               onSearch={setSearchResults}
-              placeholder="Search for products..."
+              placeholder={`Search in ${categoryLabel}...`}
               className="w-full"
-              selectedCategory={selectedCategory}
+              selectedCategory={categoryParam}
             />
           </div>
           <div className="w-full md:w-64 flex gap-2">
             <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-1/2 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
-            >
-              {categories.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-            <select
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
-              className="w-1/2 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
+              className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white text-blue-900 placeholder-blue-400"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -180,7 +160,7 @@ export default function CategoriesPage() {
           </div>
         </div>
         <h2 className="text-xl font-semibold text-blue-900 mb-4">
-          Search Results ({filteredResults.length})
+          {filteredResults.length} Products in {categoryLabel}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mounted &&

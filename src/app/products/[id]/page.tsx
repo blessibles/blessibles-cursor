@@ -1,59 +1,28 @@
-"use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import ProductRecommendations from '../../../components/ProductRecommendations';
-import { useCart } from '../../../app/layout';
+import ProductRecommendationsClientWrapper from '../../../components/ProductRecommendationsClientWrapper';
+import { useCart } from '@/contexts/CartContext';
 import { supabase } from '../../../utils/supabaseClient';
-import { AddToCollection } from '@/components/AddToCollection';
+import AddToCollectionClientWrapper from '@/components/AddToCollectionClientWrapper';
+import Link from 'next/link';
+import AddToCartClient from '@/components/AddToCartClient';
+import SocialShareClient from '@/components/SocialShareClient';
 
-export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params;
-  const [product, setProduct] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
-  const { addToCart } = useCart();
-
-  useEffect(() => {
-    loadProduct();
-  }, [resolvedParams.id]);
-
-  const loadProduct = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', resolvedParams.id)
-        .single();
-
-      if (error) throw error;
-      setProduct(data);
-    } catch (err) {
-      console.error('Error loading product:', err);
-      setError('Failed to load product');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="container mx-auto py-8">
-        <div className="animate-pulse space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="h-96 bg-gray-200 rounded"></div>
-            <div className="space-y-4">
-              <div className="h-8 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  // Fetch product data from Supabase
+  let product = null;
+  let error = null;
+  try {
+    const { data, error: fetchError } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', params.id)
+      .single();
+    if (fetchError) throw fetchError;
+    product = data;
+  } catch (err: any) {
+    error = err.message || 'Failed to load product';
   }
 
   if (error || !product) {
@@ -61,19 +30,41 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <div className="container mx-auto py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600">Product not found</h1>
-          <button
-            onClick={() => router.push('/')}
-            className="text-blue-600 hover:text-blue-800 mt-4"
-          >
-            Return to Home
-          </button>
+          <Link href="/products" className="text-blue-600 hover:text-blue-800 mt-4 inline-block">
+            Return to Products
+          </Link>
         </div>
       </div>
     );
   }
 
+  // Breadcrumbs
+  const breadcrumbs = [
+    { label: 'Home', href: '/' },
+    { label: 'Products', href: '/products' },
+    { label: product.category, href: `/categories/${product.category}` },
+    { label: product.name, href: `/products/${product.id}` },
+  ];
+
+  // Social share URLs
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const facebookShare = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  const twitterShare = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(product.name)}`;
+  const pinterestShare = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(shareUrl)}&media=${encodeURIComponent(product.image_url || '/placeholder.png')}&description=${encodeURIComponent(product.name)}`;
+
   return (
     <div className="container mx-auto py-8">
+      {/* Breadcrumbs */}
+      <nav className="mb-6 text-sm text-blue-700 flex gap-2 items-center">
+        {breadcrumbs.map((crumb, idx) => (
+          <span key={crumb.href} className="flex items-center">
+            <Link href={crumb.href} className="hover:underline">
+              {crumb.label}
+            </Link>
+            {idx < breadcrumbs.length - 1 && <span className="mx-2">/</span>}
+          </span>
+        ))}
+      </nav>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="relative h-96">
           <Image
@@ -92,13 +83,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           </div>
           <p className="text-gray-600">{product.description}</p>
           <div className="flex flex-wrap gap-4">
-            <button
-              onClick={() => addToCart(product)}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Add to Cart
-            </button>
-            <AddToCollection productId={product.id} />
+            <AddToCartClient product={product} />
+            <AddToCollectionClientWrapper productId={product.id} />
           </div>
           {product.tags && product.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
@@ -112,19 +98,29 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               ))}
             </div>
           )}
+          {/* Social Sharing */}
+          <SocialShareClient
+            shareUrl={shareUrl}
+            facebookShare={facebookShare}
+            twitterShare={twitterShare}
+            pinterestShare={pinterestShare}
+          />
+          {/* Reviews/Ratings Placeholder */}
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold text-blue-900 mb-2">Reviews & Ratings</h2>
+            <p className="text-gray-500">Reviews and ratings coming soon!</p>
+          </div>
         </div>
       </div>
-
       {/* Scripture-based Recommendations */}
-      <ProductRecommendations
-        productId={resolvedParams.id}
+      <ProductRecommendationsClientWrapper
+        productId={product.id}
         type="scripture"
         title="Scripture-based Recommendations"
         className="mt-12"
       />
-
-      <ProductRecommendations
-        productId={resolvedParams.id}
+      <ProductRecommendationsClientWrapper
+        productId={product.id}
         type="similar"
         title="You May Also Like"
         className="mt-12"

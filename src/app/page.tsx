@@ -8,7 +8,7 @@ import ProductFilters from '../components/ProductFilters';
 import products from '../data/products';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { useCart } from '../app/layout';
+import { useCart } from '@/contexts/CartContext';
 import ProductRecommendations from '../components/ProductRecommendations';
 import Testimonials from '../components/Testimonials';
 
@@ -16,14 +16,16 @@ const categories = [
   { label: 'All', value: 'all' },
   { label: 'Wall Art', value: 'wall-art' },
   { label: 'Journals', value: 'journals' },
-  { label: 'Activities', value: 'activities' },
   { label: 'Planners', value: 'planners' },
+  { label: 'Coffee Mugs', value: 'coffee-mugs', image: '/categories/journals.jpg' },
+  { label: 'Tshirts', value: 'tshirts', image: '/categories/planners.jpg' },
+  { label: 'Activities', value: 'activities' },
 ];
 
 const ProductModal = dynamic(() => import('../components/ProductModal'), { ssr: false });
 
 export default function Home() {
-  const { addToCart } = useCart();
+  const { addItem } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchResults, setSearchResults] = useState<SearchableItem[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<SearchableItem[]>(products);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SearchableItem } from '../utils/search';
 import { Recommendation, getUserRecommendations, getSimilarProducts, getTrendingProducts } from '../utils/recommendations';
-import { ProductCard } from './ProductCard';
+import ProductCardClientWrapper from './ProductCardClientWrapper';
 import { useRouter } from 'next/navigation';
 import { useSupabase } from '../hooks/useSupabase';
 import { Product } from '@/types';
@@ -132,7 +132,7 @@ export default function ProductRecommendations({
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((product) => (
-          <ProductCard
+          <ProductCardClientWrapper
             key={product.id}
             product={product}
           />

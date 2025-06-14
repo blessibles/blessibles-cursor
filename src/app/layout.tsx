@@ -1,77 +1,15 @@
 "use client";
 import './globals.css';
 import Link from 'next/link';
-import { ReactNode, useState, createContext, useContext, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-// import { v4 as uuidv4 } from 'uuid'; // Removed unused import
+import { ReactNode, useEffect, useState, useContext } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import NotificationBell from '../components/NotificationBell';
 import GoogleAnalytics from '../components/GoogleAnalytics';
 import { initPerformanceMonitoring } from '../utils/performance';
 import DailyVerse from '../components/DailyVerse';
-
-// Cart context types
-interface CartItem {
-  title: string;
-  quantity: number;
-}
-interface CartContextType {
-  cart: CartItem[];
-  addToCart: (item: CartItem) => void;
-  removeFromCart: (title: string) => void;
-  increaseQuantity: (title: string) => void;
-  decreaseQuantity: (title: string) => void;
-  cartCount: number;
-}
-const CartContext = createContext<CartContextType | undefined>(undefined);
-
-export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart must be used within CartProvider');
-  return ctx;
-}
-
-function CartProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [cartMessage, setCartMessage] = useState('');
-  const addToCart = (item: CartItem) => {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.title === item.title);
-      if (existing) {
-        setCartMessage(`${item.title} quantity increased in cart.`);
-        return prev.map((i) =>
-          i.title === item.title ? { ...i, quantity: i.quantity + item.quantity } : i
-        );
-      }
-      setCartMessage(`${item.title} added to cart.`);
-      return [...prev, item];
-    });
-  };
-  const removeFromCart = (title: string) => {
-    setCart((prev) => prev.filter((i) => i.title !== title));
-    setCartMessage(`${title} removed from cart.`);
-  };
-  const increaseQuantity = (title: string) => {
-    setCart((prev) => prev.map((i) =>
-      i.title === title ? { ...i, quantity: i.quantity + 1 } : i
-    ));
-    setCartMessage(`${title} quantity increased in cart.`);
-  };
-  const decreaseQuantity = (title: string) => {
-    setCart((prev) => prev.flatMap((i) =>
-      i.title === title ? (i.quantity > 1 ? [{ ...i, quantity: i.quantity - 1 }] : []) : [i]
-    ));
-    setCartMessage(`${title} quantity decreased in cart.`);
-  };
-  const cartCount = cart.reduce((sum, i) => sum + i.quantity, 0);
-  return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, cartCount }}>
-      {/* ARIA live region for cart updates */}
-      <div aria-live="polite" className="sr-only">{cartMessage}</div>
-      {children}
-    </CartContext.Provider>
-  );
-}
+import { CartProvider, useCart } from '@/contexts/CartContext';
+import { useRouter } from 'next/navigation';
+import CartButton from '@/components/CartButton';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -232,51 +170,6 @@ function AuthStatus() {
   }
   return (
     <Link href="/login" className="text-blue-900 hover:text-blue-950 font-medium">Login</Link>
-  );
-}
-
-function CartButton() {
-  const ctx = useContext(CartContext);
-  const cartCount = ctx ? ctx.cartCount : 0;
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-  return (
-    <>
-      <button className="relative" onClick={() => setOpen(true)}>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-7 h-7 text-blue-900 hover:text-blue-950">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.5l.375 2.25M6 16.5A2.25 2.25 0 1 0 6 21a2.25 2.25 0 0 0 0-4.5zm0 0h9.75a2.25 2.25 0 0 0 2.24-2.02l1.08-8.11A1.125 1.125 0 0 0 17.93 5.25H4.81" />
-        </svg>
-        <span className="absolute -top-2 -right-2 bg-blue-900 text-white text-xs rounded-full px-1.5 py-0.5">{cartCount}</span>
-      </button>
-      {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-none relative mx-4 sm:mx-12 md:mx-32 lg:mx-64 xl:mx-96">
-            <button className="absolute top-2 right-2 text-blue-900 hover:text-blue-950 text-xl" onClick={() => setOpen(false)}>&times;</button>
-            <h3 className="text-lg font-bold mb-4 text-blue-900">Your Cart</h3>
-            {ctx && ctx.cart.length > 0 ? (
-              <>
-                <ul className="mb-4">
-                  {ctx.cart.map((item) => (
-                    <li key={item.title} className="flex justify-between items-center py-1 border-b last:border-b-0 gap-2">
-                      <span>{item.title}</span>
-                      <div className="flex items-center gap-1">
-                        <button className="px-2 py-0.5 bg-blue-100 text-blue-900 rounded hover:bg-blue-200" onClick={() => ctx.decreaseQuantity(item.title)}>-</button>
-                        <span className="font-semibold text-blue-900">{item.quantity}</span>
-                        <button className="px-2 py-0.5 bg-blue-100 text-blue-900 rounded hover:bg-blue-200" onClick={() => ctx.increaseQuantity(item.title)}>+</button>
-                      </div>
-                      <button className="text-red-600 hover:text-red-800 text-xs ml-2" onClick={() => ctx.removeFromCart(item.title)}>Remove</button>
-                    </li>
-                  ))}
-                </ul>
-                <button className="w-full bg-blue-900 text-white py-2 rounded font-semibold hover:bg-blue-800 transition mb-2" onClick={() => { setOpen(false); router.push('/checkout'); }}>Checkout</button>
-              </>
-            ) : (
-              <p className="text-blue-900">Your cart is empty.</p>
-            )}
-          </div>
-        </div>
-      )}
-    </>
   );
 }
 
