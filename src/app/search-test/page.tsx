@@ -209,41 +209,35 @@ export default function SearchTest() {
                         </div>
                       )}
                     </div>
-                    <div className="mt-4 flex gap-2">
-                      {/* Facebook Share */}
+                    <div className="mt-4 flex space-x-2">
                       <a
-                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://blessibles.com/products/' + product.id)}`}
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Share on Facebook"
                         className="text-blue-600 hover:text-blue-800"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
-                          <path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0" />
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/>
                         </svg>
                       </a>
-                      {/* Twitter Share */}
                       <a
-                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(product.name + ' - Blessibles')}&url=${encodeURIComponent('https://blessibles.com/products/' + product.id)}`}
+                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Share on Twitter"
-                        className="text-blue-400 hover:text-blue-600"
+                        className="text-black hover:text-gray-800"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
-                          <path d="M24 4.557a9.83 9.83 0 0 1-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195a4.916 4.916 0 0 0-8.38 4.482C7.691 8.095 4.066 6.13 1.64 3.161c-.542.929-.856 2.01-.857 3.17 0 2.188 1.115 4.117 2.823 5.247a4.904 4.904 0 0 1-2.229-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.209c9.058 0 14.009-7.496 14.009-13.986 0-.21 0-.423-.016-.634A9.936 9.936 0 0 0 24 4.557z" />
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                         </svg>
                       </a>
-                      {/* Pinterest Share */}
                       <a
-                        href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent('https://blessibles.com/products/' + product.id)}&media=${encodeURIComponent(product.image)}&description=${encodeURIComponent(product.name)}`}
+                        href={`https://pinterest.com/pin/create/button/?url=${encodeURIComponent(window.location.href)}&media=${encodeURIComponent(product.image)}&description=${encodeURIComponent(product.name)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Share on Pinterest"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-600 hover:text-red-800"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5">
-                          <path d="M12 0C5.373 0 0 5.373 0 12c0 4.991 3.657 9.128 8.438 10.388-.117-.883-.223-2.24.047-3.205.242-.828 1.557-5.28 1.557-5.28s-.396-.793-.396-1.963c0-1.838 1.067-3.212 2.396-3.212 1.13 0 1.676.849 1.676 1.866 0 1.137-.724 2.837-1.096 4.418-.312 1.32.663 2.396 1.965 2.396 2.358 0 3.953-3.03 3.953-6.622 0-2.736-1.848-4.788-5.217-4.788-3.797 0-6.18 2.844-6.18 5.998 0 1.093.322 1.864.827 2.46.232.277.265.388.181.705-.062.242-.2.825-.257 1.057-.08.323-.326.438-.602.318-1.682-.687-2.453-2.53-2.453-4.604 0-3.42 2.89-7.513 8.617-7.513 4.605 0 7.638 3.324 7.638 6.89 0 4.729-2.63 8.264-6.537 8.264-1.312 0-2.545-.711-2.965-1.515l-.807 3.07c-.23.888-.682 2.002-1.018 2.68.765.236 1.572.364 2.414.364 6.627 0 12-5.373 12-12S18.627 0 12 0z" />
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/>
                         </svg>
                       </a>
                     </div>
