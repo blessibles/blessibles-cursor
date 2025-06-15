@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useCollections } from '@/hooks/useCollections';
 import { Button } from './ui/button';
