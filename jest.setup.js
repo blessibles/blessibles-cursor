@@ -16,26 +16,27 @@ jest.mock('next/router', () => ({
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      push: jest.fn(),
-      replace: jest.fn(),
-      back: jest.fn(),
-    };
-  },
-  usePathname() {
-    return '';
-  },
-  useSearchParams() {
-    return new URLSearchParams();
-  },
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn()
+  })
 }));
 
 // Mock next/image
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props) => {
-    // eslint-disable-next-line jsx-a11y/alt-text
-    return <img {...props} />;
-  },
-})); 
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img {...props} alt={props.alt} />;
+  }
+}));
+
+// Mock window.location
+delete window.location;
+window.location = {
+  href: 'http://localhost:3000',
+  assign: jest.fn(),
+  replace: jest.fn(),
+  reload: jest.fn()
+}; 
